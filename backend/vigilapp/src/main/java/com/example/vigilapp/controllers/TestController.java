@@ -18,8 +18,9 @@ public class TestController {
     @GetMapping("/db")
     public String testConnection() {
         Prueba p = new Prueba();
-        p.setMensaje("¡Conexión exitosa desde Spring Boot!");
+        p.setMensaje("Prueba final con los .env");
+        p.setNombre("Dayro Moreno");
         repository.save(p);
-        return "Registro guardado en Supabase a las " + p.getFecha();
+        return "Registro guardado en Supabase a las " + p.getCreated_at();
     }
 }

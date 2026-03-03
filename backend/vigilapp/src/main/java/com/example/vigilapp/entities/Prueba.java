@@ -6,9 +6,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
+import lombok.Data;
 import jakarta.persistence.Id;
 
 @Entity
+@Data
 @Table(name = "prueba")
 public class Prueba {
 
@@ -17,29 +19,6 @@ public class Prueba {
     private Long id;
 
     private String mensaje;
-    private LocalDateTime fecha = LocalDateTime.now();
-
-    // Constructor vacío obligatorio para JPA
-    public Prueba() {}
-
-    // --- AQUÍ ESTÁ LO QUE TE FALTA ---
-    public String getMensaje() {
-        return mensaje;
-    }
-
-    public void setMensaje(String mensaje) {
-        this.mensaje = mensaje;
-    }
-
-    public LocalDateTime getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(LocalDateTime fecha) {
-        this.fecha = fecha;
-    }
-
-    public Long getId() {
-        return id;
-    }
+    private String nombre;
+    private LocalDateTime created_at = LocalDateTime.now();
 }
