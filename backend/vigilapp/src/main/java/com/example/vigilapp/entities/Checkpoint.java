@@ -1,6 +1,5 @@
 package com.example.vigilapp.entities;
 
-import java.util.function.LongFunction;
 
 import org.hibernate.annotations.ManyToAny;
 
