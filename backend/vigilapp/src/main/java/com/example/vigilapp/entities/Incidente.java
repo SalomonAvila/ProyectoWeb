@@ -1,47 +1,35 @@
 package com.example.vigilapp.entities;
 
 import java.time.LocalDateTime;
-
-import org.hibernate.annotations.ManyToAny;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "Incidente")
-public class Incidente{
+public class Incidente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id_incidente;
 
     private LocalDateTime fecha_hora;
+
     private String descripcion;
-    
-    @ManyToAny(fetch = FetchType.LAZY)
+
+    @ManyToOne
     @JoinColumn(name = "id_turno", nullable = false)
-    private Long id_turno;
+    private Turno turno;
 
-    @ManyToAny(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_zona", nullable = false)
-    private Long id_zona;
+    private Zona zona;
 
-    @ManyToAny(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_tipo", nullable = false)
-    private Long id_tipo;
+    private TipoIncidente tipoIncidente;
 
-    @ManyToAny(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_severidad", nullable = false)
-    private Long id_severidad;
-
-    
-
-
+    private Severidad severidad;
 }
