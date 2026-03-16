@@ -3,14 +3,14 @@ import java.util.*;
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.example.vigilapp.exception.ProfesorNotFoundException;
+import com.example.vigilapp.exception.UsuarioNotFoundException;
 
 public class HandlerExceptionController {
 
-    @ExceptionHandler(ProfesorNotFoundException.class)
-    public Map<String, String> handleProfesorNotFoundException(ProfesorNotFoundException ex) {
+    @ExceptionHandler(UsuarioNotFoundException.class)
+    public Map<String, String> handleUsuarioNotFoundException(UsuarioNotFoundException ex) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", "Profesor no encontrado");
+        errorResponse.put("error", "Usuario no encontrado");
         errorResponse.put("message", ex.getMessage());
         return errorResponse;
     }
