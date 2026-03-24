@@ -10,3 +10,4 @@ ENV PORT=4000
 COPY --from=builder /app/dist/vigilapp/browser /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 CMD ["nginx", "-g", "daemon off;"]
+
