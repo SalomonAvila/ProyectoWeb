@@ -162,3 +162,9 @@ CREATE TABLE incidente (
     CONSTRAINT fk_incidente_tipo      FOREIGN KEY (id_tipo)      REFERENCES tipo_incidente(id_tipo),
     CONSTRAINT fk_incidente_severidad FOREIGN KEY (id_severidad) REFERENCES severidad(id_severidad)
 );
+
+INSERT INTO rol (id_rol, nombre)
+VALUES
+    (1, 'ADMINISTRADOR'),
+    (2, 'COORDINADOR'),
+    (3, 'PROFESOR');

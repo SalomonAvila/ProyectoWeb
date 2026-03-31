@@ -21,9 +21,6 @@ import com.example.vigilapp.exception.TurnoNotFoundException;
 import com.example.vigilapp.exception.UsuarioNotFoundException;
 import com.example.vigilapp.exception.ZonaNotFoundException;
 
-import jakarta.security.auth.message.AuthException;
-
-
 
 @RestControllerAdvice
 public class HandlerExceptionController {
