@@ -5,5 +5,10 @@ export const routes: Routes = [
     path: '',
     loadChildren: () =>
       import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
+  },
+  {
+    path: 'profesor',
+    loadChildren: () =>
+      import('./features/profesor/profesor.routes').then(m => m.PROFESOR_ROUTES)
   }
 ];
