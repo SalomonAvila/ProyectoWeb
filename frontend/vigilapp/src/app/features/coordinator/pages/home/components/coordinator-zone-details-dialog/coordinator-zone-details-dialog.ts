@@ -13,6 +13,13 @@ export class CoordinatorZoneDetailsDialog {
   @Input() zone: CoordinatorZone | null = null;
   @Input() shifts: CoordinatorShift[] = [];
   @Input() incidents: CoordinatorIncident[] = [];
+  @Input() incidentSummary: { total: number; lastMonth: number; lastWeek: number } = {
+    total: 0,
+    lastMonth: 0,
+    lastWeek: 0
+  };
+  @Input() currentTeacherName = '';
+  @Input() currentTeacherLabel = '';
 
   @Output() close = new EventEmitter<void>();
 }

@@ -104,6 +104,15 @@ export const MOCK_SHIFTS: CoordinatorShift[] = [
 
 export const MOCK_INCIDENTS: CoordinatorIncident[] = [
   {
+    id: 'i0',
+    zoneId: 'z1',
+    zoneName: 'Bloque A',
+    teacherName: 'Laura Peña',
+    timestamp: '2026-01-22T08:25:00',
+    severity: 'S1',
+    description: 'Revisión preventiva en acceso principal.'
+  },
+  {
     id: 'i1',
     zoneId: 'z2',
     zoneName: 'Bloque B',
@@ -111,6 +120,15 @@ export const MOCK_INCIDENTS: CoordinatorIncident[] = [
     timestamp: '2026-02-26T08:15:00',
     severity: 'S2',
     description: 'Estudiantes reunidos fuera del laboratorio.'
+  },
+  {
+    id: 'i1b',
+    zoneId: 'z2',
+    zoneName: 'Bloque B',
+    teacherName: 'Andrés Mora',
+    timestamp: '2026-02-21T11:10:00',
+    severity: 'S1',
+    description: 'Circulación controlada en pasillo de laboratorios.'
   },
   {
     id: 'i2',
@@ -122,6 +140,15 @@ export const MOCK_INCIDENTS: CoordinatorIncident[] = [
     description: 'No se registró check-in dentro del tiempo esperado.'
   },
   {
+    id: 'i2b',
+    zoneId: 'z3',
+    zoneName: 'Patio Central',
+    teacherName: 'Sofía Rojas',
+    timestamp: '2026-02-24T12:05:00',
+    severity: 'S2',
+    description: 'Aglomeración temporal en la salida oeste.'
+  },
+  {
     id: 'i3',
     zoneId: 'z1',
     zoneName: 'Bloque A',
@@ -129,6 +156,33 @@ export const MOCK_INCIDENTS: CoordinatorIncident[] = [
     timestamp: '2026-02-26T10:05:00',
     severity: 'S1',
     description: 'Acceso controlado sin novedades.'
+  },
+  {
+    id: 'i3b',
+    zoneId: 'z1',
+    zoneName: 'Bloque A',
+    teacherName: 'Laura Peña',
+    timestamp: '2026-02-25T13:35:00',
+    severity: 'S2',
+    description: 'Verificación de flujo en recepción.'
+  },
+  {
+    id: 'i4',
+    zoneId: 'z4',
+    zoneName: 'Bloque C',
+    teacherName: 'Miguel Torres',
+    timestamp: '2026-01-30T16:45:00',
+    severity: 'S1',
+    description: 'Cierre ordenado de biblioteca.'
+  },
+  {
+    id: 'i4b',
+    zoneId: 'z4',
+    zoneName: 'Bloque C',
+    teacherName: 'Miguel Torres',
+    timestamp: '2026-02-18T09:15:00',
+    severity: 'S2',
+    description: 'Apoyo académico con supervisión reforzada.'
   }
 ];
 

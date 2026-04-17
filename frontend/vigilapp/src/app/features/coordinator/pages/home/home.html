@@ -23,6 +23,8 @@
 		<app-coordinator-zone-map
 			[zones]="mockZones"
 			[activeShifts]="activeShifts"
+			[missedShifts]="missedShifts"
+			[incidents]="todayIncidents"
 			(zoneSelected)="viewZoneDetails($event.id)"
 		/>
 
@@ -50,6 +52,9 @@
 		[zone]="selectedZoneData"
 		[shifts]="selectedZoneShifts"
 		[incidents]="selectedZoneIncidents"
+		[incidentSummary]="selectedZoneIncidentSummary"
+		[currentTeacherName]="selectedZoneTeacherName"
+		[currentTeacherLabel]="selectedZoneTeacherLabel"
 		(close)="closeZoneDetails()"
 	/>
 

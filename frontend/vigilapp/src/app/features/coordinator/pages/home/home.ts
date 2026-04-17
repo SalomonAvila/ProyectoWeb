@@ -115,6 +115,49 @@ export class Home implements OnInit, OnDestroy {
       : [];
   }
 
+  get selectedZoneIncidentSummary(): { total: number; lastMonth: number; lastWeek: number } {
+    if (!this.selectedZoneId) {
+      return { total: 0, lastMonth: 0, lastWeek: 0 };
+    }
+
+    const incidents = this.mockIncidents.filter(incident => incident.zoneId === this.selectedZoneId);
+    const referenceDate = new Date(`${this.today}T23:59:59`);
+    const lastWeekThreshold = new Date(referenceDate);
+    lastWeekThreshold.setDate(referenceDate.getDate() - 7);
+    const lastMonthThreshold = new Date(referenceDate);
+    lastMonthThreshold.setDate(referenceDate.getDate() - 30);
+
+    return {
+      total: incidents.length,
+      lastMonth: incidents.filter(incident => new Date(incident.timestamp) >= lastMonthThreshold).length,
+      lastWeek: incidents.filter(incident => new Date(incident.timestamp) >= lastWeekThreshold).length,
+    };
+  }
+
+  get selectedZoneTeacherName(): string {
+    if (!this.selectedZoneId) {
+      return '';
+    }
+
+    const activeShift = this.activeShifts.find(shift => shift.zoneId === this.selectedZoneId);
+    if (activeShift) {
+      return activeShift.teacherName;
+    }
+
+    const todayShift = this.todayShifts.find(shift => shift.zoneId === this.selectedZoneId);
+    return todayShift?.teacherName || 'Sin docente asignado';
+  }
+
+  get selectedZoneTeacherLabel(): string {
+    if (!this.selectedZoneId) {
+      return '';
+    }
+
+    return this.activeShifts.some(shift => shift.zoneId === this.selectedZoneId)
+      ? 'Docente actualmente asignado'
+      : 'Docente asignado para la jornada';
+  }
+
   get availableTeachers(): CoordinatorTeacher[] {
     return this.mockTeachers.filter(teacher => teacher.isActive);
   }
