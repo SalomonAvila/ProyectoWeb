@@ -1,6 +1,6 @@
 # VigilApp
 
-**Aplicación web full-stack con frontend Angular, backend Java/Spring Boot, PostgreSQL y despliegue con Docker.**
+**Full-stack web application with Angular frontend, Java/Spring Boot backend, PostgreSQL, and Docker-based deployment.**
 
 [![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.java.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -14,131 +14,127 @@
 
 ---
 
-## Tabla de Contenidos
+## Table of Contents
 
-- [Descripción](#-descripción)
-- [Tecnologías](#-tecnologías)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Frontend (Angular)](#-frontend-angular)
-- [Requisitos Previos](#-requisitos-previos)
-- [Configuración](#️-configuración)
-- [Levantar el Proyecto](#-levantar-el-proyecto)
-- [Servicios Disponibles](#-servicios-disponibles)
-- [Equipo](#-equipo)
-
----
-
-## Descripción
-
-**VigilApp** es una aplicación web con arquitectura **frontend + backend + base de datos**, contenerizada con Docker Compose.
-
-El proyecto incluye:
-- **Frontend** en Angular 21 (SSR) con Tailwind CSS
-- **Backend** construido con Java (Spring Boot)
-- **Base de datos** PostgreSQL con inicialización automática vía `init.sql`
-- **Panel de administración** de base de datos con pgAdmin
-- **CI/CD** configurado con GitHub Actions
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Frontend (Angular)](#frontend-angular)
+- [Prerequisites](#prerequisites)
+- [Configuration](#configuration)
+- [Running the Project](#running-the-project)
+- [Available Services](#available-services)
+- [Team](#team)
 
 ---
 
-## Tecnologías
+## Overview
 
-| Capa | Tecnología |
+**VigilApp** follows a **frontend + backend + database** architecture and is fully containerized with Docker Compose.
+
+The project includes:
+- **Frontend**: Angular 21 (SSR) with Tailwind CSS
+- **Backend**: Java with Spring Boot
+- **Database**: PostgreSQL with automatic initialization via `init.sql`
+- **Database Admin UI**: pgAdmin
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
 |------|-----------|
 | Frontend | Angular 21 · TypeScript · SSR · Tailwind CSS |
 | Backend | Java · Spring Boot |
-| Base de datos | PostgreSQL 15 |
+| Database | PostgreSQL 15 |
 | DB Admin | pgAdmin 4 |
-| Contenedores | Docker · Docker Compose |
-| CI/CD | GitHub Actions |
+| Containers | Docker · Docker Compose |
 
 ---
 
-## Estructura del Proyecto
+## Project Structure
 
-```
+```text
 ProyectoWeb/
-├── .github/
-│   └── workflows/        # Pipelines de CI/CD
 ├── backend/
-│   └── vigilapp/         # Código fuente Spring Boot
+│   └── vigilapp/         # Spring Boot source code
 │       └── Dockerfile
-├── docs/                 # Documentación adicional
+├── docs/                 # Additional documentation
 ├── frontend/
-│   └── vigilapp/         # App Angular (SSR)
+│   └── vigilapp/         # Angular app (SSR)
 │       └── src/app/
-│           ├── core/     # Modelos/servicios base
-│           └── features/ # Módulos por rol (auth, coordinator, etc.)
-├── .env.example          # Variables de entorno de ejemplo
+│           ├── core/     # Base models/services
+│           └── features/ # Role-based modules (auth, coordinator, etc.)
+├── .env.example          # Example environment variables
 ├── .gitignore
-├── compose.yml           # Configuración Docker Compose
-├── init.sql              # Script de inicialización de la DB
-└── rebuild.sh            # Script de reconstrucción rápida
+├── compose.yml           # Docker Compose configuration
+├── init.sql              # Database initialization script
+└── rebuild.sh            # Fast rebuild helper script
 ```
 
 ---
 
 ## Frontend (Angular)
 
-### Arquitectura técnica
+### Technical architecture
 
-- Aplicación Angular 21 con renderizado SSR.
-- Organización por *features* y componentes standalone.
-- Modelos tipados en `src/app/core/models`.
-- Enrutamiento principal en `src/app/app.routes.ts`.
+- Angular 21 application with SSR.
+- Standalone components organized by feature modules.
+- Typed domain models in `src/app/core/models`.
+- Main routing in `src/app/app.routes.ts`.
 
-### Incorporaciones recientes (frontend)
+### Recent frontend additions
 
-- Módulo de coordinador en la ruta base `/coordinator`.
-- Pantalla principal en `/coordinator/home`.
-- Reemplazo de “Mapa de Zonas” por **mapa de calor técnico en modo claro**.
-- Zonas con indicador visual por nivel de calor (`Baja`, `Media`, `Alta`, `Crítica`).
-- Interacción por click en zona para abrir resumen técnico con:
-	- total histórico de incidentes,
-	- incidentes del último mes,
-	- incidentes de la última semana,
-	- docente asignado/activo en la zona.
-- Diálogo de detalle de zona actualizado para consumo de métricas agregadas.
+- Coordinator module mounted at `/coordinator`.
+- Main coordinator screen at `/coordinator/home`.
+- Zone map replaced with a **light-theme technical heatmap**.
+- Zone circles displayed by heat level (`Low`, `Medium`, `High`, `Critical`).
+- Click interaction per zone to open a technical summary with:
+  - total historical incidents,
+  - incidents in the last month,
+  - incidents in the last week,
+  - current/assigned teacher for that zone.
+- Zone detail dialog updated to consume aggregated metrics.
 
 ---
 
-## Requisitos Previos
+## Prerequisites
 
-Asegúrate de tener instalado:
+Make sure you have installed:
 
 - [Docker](https://docs.docker.com/get-docker/)
 - [Git](https://git-scm.com/)
-- [Node.js 20+](https://nodejs.org/) (solo para ejecución local del frontend fuera de Docker)
-- [Angular CLI](https://angular.dev/tools/cli) (opcional para desarrollo local)
+- [Node.js 20+](https://nodejs.org/) (only for local frontend development outside Docker)
+- [Angular CLI](https://angular.dev/tools/cli) (optional for local development)
 
 ---
 
-## Configuración
+## Configuration
 
-1. **Clona el repositorio:**
+1. **Clone the repository:**
 
 ```bash
 git clone https://github.com/SalomonAvila/ProyectoWeb.git
 cd ProyectoWeb
 ```
 
-2. **Crea tu archivo de variables de entorno** a partir del ejemplo:
+2. **Create your environment file** from the example:
 
 ```bash
 cp .env.example .env
 ```
 
-3. **Edita el archivo `.env`** con tus valores:
+3. **Edit `.env`** with your values:
 
 ```env
 # PostgreSQL
-POSTGRES_USER=tu_usuario
-POSTGRES_PASSWORD=tu_contraseña_segura
+POSTGRES_USER=your_user
+POSTGRES_PASSWORD=your_strong_password
 POSTGRES_DB=vigilapp_db
 POSTGRES_PORT=5432
 
 # pgAdmin
-PGADMIN_EMAIL=admin@ejemplo.com
+PGADMIN_EMAIL=admin@example.com
 PGADMIN_PASSWORD=admin123
 PGADMIN_PORT=5050
 
@@ -152,33 +148,33 @@ FRONTEND_PORT=4000
 
 ---
 
-## Levantar el Proyecto
+## Running the Project
 
-**Construir y levantar todos los servicios:**
+**Build and start all services:**
 
 ```bash
 docker compose up --build
 ```
 
-**Levantar en segundo plano:**
+**Run in detached mode:**
 
 ```bash
 docker compose up --build -d
 ```
 
-**Reconstruir rápidamente (usando el script incluido):**
+**Quick rebuild (using included helper script):**
 
 ```bash
 bash rebuild.sh
 ```
 
-**Detener todos los servicios:**
+**Stop all services:**
 
 ```bash
 docker compose down
 ```
 
-**Detener y eliminar volúmenes (limpieza total):**
+**Stop and remove volumes (full cleanup):**
 
 ```bash
 docker compose down -v
@@ -186,26 +182,26 @@ docker compose down -v
 
 ---
 
-## Servicios Disponibles
+## Available Services
 
-Una vez levantados los contenedores, puedes acceder a:
+Once containers are running, you can access:
 
-| Servicio | URL | Descripción |
+| Service | URL | Description |
 |----------|-----|-------------|
-| Frontend | `http://localhost:${FRONTEND_PORT}` | Aplicación Angular SSR |
-| Backend API | `http://localhost:${SPRING_PORT}` | API REST de Spring Boot |
-| pgAdmin | `http://localhost:${PGADMIN_PORT}` | Administrador visual de PostgreSQL |
-| PostgreSQL | `localhost:${POSTGRES_PORT}` | Base de datos (acceso directo) |
+| Frontend | `http://localhost:${FRONTEND_PORT}` | Angular SSR application |
+| Backend API | `http://localhost:${SPRING_PORT}` | Spring Boot REST API |
+| pgAdmin | `http://localhost:${PGADMIN_PORT}` | PostgreSQL admin interface |
+| PostgreSQL | `localhost:${POSTGRES_PORT}` | Direct database access |
 
-> Los puertos dependen de los valores definidos en tu archivo `.env`.
+> Ports depend on values defined in your `.env` file.
 
 ---
 
-## Equipo
+## Team
 
-Desarrollado por:
+Developed by:
 
-| Integrante | GitHub |
+| Member | GitHub |
 |-----------|--------|
 | Salomon Avila | [@SalomonAvila](https://github.com/SalomonAvila) |
 | Gabriel Jaramillo | [@GabrielJaramilloCuberos](https://github.com/GabrielJaramilloCuberos) |
