@@ -7,6 +7,9 @@ export const routes: Routes = [
       import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
   },
   {
+    path: 'profesor',
+    loadChildren: () =>
+      import('./features/profesor/profesor.routes').then(m => m.PROFESOR_ROUTES)
     path: 'coordinator',
     loadChildren: () =>
       import('./features/coordinator/coordinator.routes').then(

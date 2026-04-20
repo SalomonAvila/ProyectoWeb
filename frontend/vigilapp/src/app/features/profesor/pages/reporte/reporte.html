@@ -1,0 +1,185 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 px-4 py-8">
+  <div class="w-full max-w-2xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex items-center gap-3 mb-5">
+      <button
+        (click)="cancelar()"
+        class="text-gray-400 hover:text-gray-700 transition-colors duration-200 p-1 rounded-lg hover:bg-white/60">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <h1 class="text-xl font-semibold text-gray-800">Registrar Incidente</h1>
+    </div>
+
+    <app-glass-card>
+      <div class="space-y-8">
+
+        <!-- ── Sección 1: Ubicación y Tipo ── -->
+        <section class="space-y-5">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-bold text-blue-400 tracking-widest uppercase whitespace-nowrap">1. Ubicación y Tipo</span>
+            <div class="flex-1 h-px bg-gray-100"></div>
+          </div>
+
+          <!-- Zona -->
+          <div class="space-y-2">
+            <p class="text-sm font-medium text-gray-500">Zona</p>
+            <div class="grid grid-cols-2 gap-3">
+              @for (zona of zonas; track zona.id) {
+                <button
+                  type="button"
+                  (click)="seleccionarZona(zona.id)"
+                  class="text-left px-4 py-3 rounded-2xl border transition-all duration-200 active:scale-95"
+                  [class.border-blue-400]="zonaSeleccionada() === zona.id"
+                  [class.border-2]="zonaSeleccionada() === zona.id"
+                  [class.bg-blue-50]="zonaSeleccionada() === zona.id"
+                  [class.border-gray-200]="zonaSeleccionada() !== zona.id"
+                  [class.bg-white]="zonaSeleccionada() !== zona.id"
+                  [class.hover:border-blue-200]="zonaSeleccionada() !== zona.id">
+                  <p class="text-sm font-semibold text-gray-800">{{ zona.nombre }}</p>
+                  <p class="text-xs text-gray-400 mt-0.5">{{ zona.descripcion }}</p>
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Tipo de Incidente -->
+          <div class="space-y-2">
+            <p class="text-sm font-medium text-gray-500">Tipo de Incidente</p>
+            <div class="grid grid-cols-2 gap-3">
+              @for (tipo of tiposIncidente; track tipo.id) {
+                <button
+                  type="button"
+                  (click)="seleccionarTipo(tipo.id)"
+                  class="text-left px-4 py-3 rounded-2xl border transition-all duration-200 active:scale-95"
+                  [class.border-blue-400]="tipoSeleccionado() === tipo.id"
+                  [class.border-2]="tipoSeleccionado() === tipo.id"
+                  [class.bg-blue-50]="tipoSeleccionado() === tipo.id"
+                  [class.border-gray-200]="tipoSeleccionado() !== tipo.id"
+                  [class.bg-white]="tipoSeleccionado() !== tipo.id">
+                  <p class="text-sm font-semibold text-gray-800">{{ tipo.nombre }}</p>
+                  <p class="text-xs text-gray-400 mt-0.5">{{ tipo.descripcion }}</p>
+                </button>
+              }
+            </div>
+          </div>
+        </section>
+
+        <div class="h-px bg-gray-100"></div>
+
+        <!-- ── Sección 2: Nivel de Severidad ── -->
+        <section class="space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-bold text-blue-400 tracking-widest uppercase whitespace-nowrap">2. Nivel de Severidad</span>
+            <div class="flex-1 h-px bg-gray-100"></div>
+          </div>
+
+          <div class="space-y-3">
+            @for (sev of severidades; track sev.codigo) {
+              <button
+                type="button"
+                (click)="seleccionarSeveridad(sev.codigo)"
+                class="w-full text-left px-4 py-4 rounded-2xl border transition-all duration-200 active:scale-[0.99]"
+                [class.border-blue-400]="severidadSeleccionada() === sev.codigo"
+                [class.border-2]="severidadSeleccionada() === sev.codigo"
+                [class.bg-blue-50]="severidadSeleccionada() === sev.codigo"
+                [class.border-gray-200]="severidadSeleccionada() !== sev.codigo"
+                [class.bg-white]="severidadSeleccionada() !== sev.codigo">
+                <div class="flex items-center gap-4">
+                  <span class="text-sm font-bold w-7"
+                    [class.text-blue-500]="severidadSeleccionada() === sev.codigo"
+                    [class.text-gray-300]="severidadSeleccionada() !== sev.codigo">
+                    {{ sev.codigo }}
+                  </span>
+                  <div>
+                    <p class="text-sm font-semibold text-gray-800">{{ sev.nombre }}</p>
+                    <p class="text-xs text-gray-400 mt-0.5">{{ sev.descripcion }}</p>
+                  </div>
+                </div>
+              </button>
+            }
+          </div>
+        </section>
+
+        <div class="h-px bg-gray-100"></div>
+
+        <!-- ── Sección 3: Descripción ── -->
+        <section class="space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-bold text-blue-400 tracking-widest uppercase whitespace-nowrap">3. Descripción</span>
+            <div class="flex-1 h-px bg-gray-100"></div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="text-sm font-medium text-gray-500">¿Qué ocurrió?</p>
+            <textarea
+              rows="4"
+              placeholder="Describe brevemente la situación..."
+              [value]="descripcion()"
+              (input)="onDescripcionChange($any($event.target).value)"
+              class="w-full px-4 py-3 rounded-2xl text-sm text-gray-700 placeholder-gray-300 bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all duration-200 resize-none">
+            </textarea>
+          </div>
+        </section>
+
+        <div class="h-px bg-gray-100"></div>
+
+        <!-- ── Sección 4: Notificaciones ── -->
+        <section class="space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-bold text-blue-400 tracking-widest uppercase whitespace-nowrap">4. Enviar Notificación A</span>
+            <div class="flex-1 h-px bg-gray-100"></div>
+          </div>
+
+          <p class="text-sm text-gray-400">Selecciona los departamentos que deben ser notificados</p>
+
+          <div class="grid grid-cols-2 gap-3">
+            @for (dep of departamentos; track dep.id) {
+              <button
+                type="button"
+                (click)="toggleDepartamento(dep.id)"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all duration-200 active:scale-95"
+                [class.border-blue-400]="departamentosSeleccionados().has(dep.id)"
+                [class.border-2]="departamentosSeleccionados().has(dep.id)"
+                [class.bg-blue-50]="departamentosSeleccionados().has(dep.id)"
+                [class.border-gray-200]="!departamentosSeleccionados().has(dep.id)"
+                [class.bg-white]="!departamentosSeleccionados().has(dep.id)">
+                <div class="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-all duration-200"
+                  [class.bg-blue-500]="departamentosSeleccionados().has(dep.id)"
+                  [class.border-2]="!departamentosSeleccionados().has(dep.id)"
+                  [class.border-gray-300]="!departamentosSeleccionados().has(dep.id)">
+                  @if (departamentosSeleccionados().has(dep.id)) {
+                    <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                  }
+                </div>
+                <span class="text-sm font-medium text-gray-700">{{ dep.nombre }}</span>
+              </button>
+            }
+          </div>
+        </section>
+
+        <!-- ── Botones ── -->
+        <div class="flex gap-3 pt-2">
+          <button
+            type="button"
+            (click)="cancelar()"
+            class="flex-1 py-3.5 rounded-2xl border border-gray-200 bg-white text-gray-600 font-medium text-sm hover:bg-gray-50 transition-all duration-200 active:scale-95">
+            Cancelar
+          </button>
+          <button
+            type="button"
+            (click)="registrar()"
+            class="flex-1 py-3.5 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-semibold text-sm shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-200 active:scale-95">
+            Registrar Incidente
+          </button>
+        </div>
+
+      </div>
+    </app-glass-card>
+
+  </div>
+</div>

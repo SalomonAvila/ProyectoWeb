@@ -1,0 +1,470 @@
+<div class="min-h-screen px-4 pt-7 pb-12"
+     style="background: radial-gradient(ellipse at 20% 20%, rgba(199,210,254,0.55) 0%, transparent 55%), radial-gradient(ellipse at 80% 10%, rgba(186,230,253,0.45) 0%, transparent 50%), radial-gradient(ellipse at 60% 80%, rgba(243,232,255,0.45) 0%, transparent 55%), #f8faff">
+  <div class="max-w-3xl mx-auto flex flex-col gap-6">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center px-1">
+      <div>
+        <h1 class="text-lg font-bold text-gray-900 m-0">{{ (usuario$ | async)?.nombre ?? 'Usuario' }}</h1>
+        <p class="text-[0.8125rem] text-gray-400 mt-0.5 m-0">Portal Docente</p>
+      </div>
+      <div class="flex items-center gap-5">
+        <div class="relative cursor-pointer text-gray-700" (click)="mostrarNotificaciones = true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <ng-container *ngIf="(unreadCount$ | async) as count">
+            <span *ngIf="count > 0"
+                  class="absolute -top-[7px] -right-2 bg-red-500 text-white text-[0.625rem] font-bold min-w-[17px] h-[17px] rounded-full flex items-center justify-center px-[3px] border-2 border-[#f8faff]">
+              {{ count }}
+            </span>
+          </ng-container>
+        </div>
+        <button class="text-[0.8125rem] font-medium text-gray-500 bg-transparent cursor-pointer px-3.5 py-1.5 rounded-full border border-gray-200 hover:bg-gray-100 hover:text-gray-900 transition-all duration-200"
+                (click)="cerrarSesion()">
+          Cerrar Sesión
+        </button>
+      </div>
+    </div>
+
+    <!-- REPORTAR -->
+    <a routerLink="/profesor/reporte"
+       class="flex items-center gap-4 text-white px-6 py-[1.125rem] rounded-[3rem] no-underline bg-gradient-to-br from-[#fb7185] to-[#f43f5e] shadow-[0_8px_24px_rgba(251,113,133,0.35)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_12px_32px_rgba(251,113,133,0.45)]">
+      <div class="bg-white/20 rounded-[0.875rem] p-2.5 flex-shrink-0 flex items-center justify-center backdrop-blur-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+             fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <div class="flex-1">
+        <p class="text-base font-bold m-0">Reportar</p>
+        <p class="text-[0.78125rem] mt-0.5 opacity-90 m-0">Registra un incidente de manera inmediata</p>
+      </div>
+      <svg class="flex-shrink-0 opacity-70" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+           viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </a>
+
+    <!-- TURNO DISPONIBLE -->
+    <ng-container *ngIf="turnosDisponibles$ | async as disponibles">
+      <ng-container *ngIf="disponibles.length > 0; else sinTurnoDisponible">
+        <div *ngFor="let turno of disponibles"
+             class="bg-white rounded-[2.5rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col gap-4 border border-blue-100/60">
+          <div class="inline-flex items-center gap-[0.45rem] text-[0.6875rem] font-semibold text-blue-700 bg-blue-50 px-3 py-[0.3rem] rounded-full self-start uppercase tracking-wide">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+            Turno Disponible
+          </div>
+          <div class="flex items-center gap-[0.875rem]">
+            <div class="bg-blue-50 rounded-full w-12 h-12 flex items-center justify-center flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                   fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-base font-bold text-gray-900 m-0">Turno Disponible</p>
+              <p class="text-sm text-gray-400 mt-0.5 m-0">{{ turno.docenteAnterior ?? 'Un docente' }} canceló este turno</p>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-[1.25rem] px-[1.125rem] py-[0.875rem] flex justify-between items-center border border-gray-100">
+            <div class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                   fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span class="text-[0.9375rem] font-semibold text-gray-900">{{ turno.zona?.nombre }}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                   fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span class="text-sm font-semibold text-gray-500">{{ turno.hora_inicio }} - {{ turno.hora_fin }}</span>
+            </div>
+          </div>
+          <button class="w-full bg-gradient-to-r from-[#00c2ff] to-[#00a8dc] text-white border-none rounded-full py-[0.8125rem] text-[0.9375rem] font-bold cursor-pointer shadow-[0_4px_14px_rgba(0,194,255,0.35)] transition-all duration-200 hover:shadow-[0_6px_20px_rgba(0,194,255,0.5)] hover:-translate-y-px active:translate-y-0"
+                  (click)="tomarTurno(turno)">
+            Tomar Turno
+          </button>
+        </div>
+      </ng-container>
+
+      <ng-template #sinTurnoDisponible>
+        <div class="bg-white rounded-[2.5rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col gap-4 border border-blue-100/60 opacity-70">
+          <div class="inline-flex items-center gap-[0.45rem] text-[0.6875rem] font-semibold text-gray-400 bg-gray-100 px-3 py-[0.3rem] rounded-full self-start uppercase tracking-wide">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Turno Disponible
+          </div>
+          <div class="flex items-center gap-[0.875rem]">
+            <div class="bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                   fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-base font-bold text-gray-400 m-0">Sin turnos disponibles</p>
+              <p class="text-sm text-gray-400 mt-0.5 m-0">No hay turnos liberados en este momento</p>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-[1.25rem] px-[1.125rem] py-[0.875rem] flex justify-between items-center border-2 border-dashed border-gray-200">
+            <div class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                   fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span class="text-[0.9375rem] font-semibold text-gray-200">— —</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                   fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span class="text-sm font-semibold text-gray-200">--:-- - --:--</span>
+            </div>
+          </div>
+          <button class="w-full bg-gray-200 text-gray-400 border-none rounded-full py-[0.8125rem] text-[0.9375rem] font-semibold cursor-not-allowed" disabled>
+            Sin turnos disponibles
+          </button>
+        </div>
+      </ng-template>
+    </ng-container>
+
+    <!-- PRÓXIMOS TURNOS -->
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center justify-between px-1">
+        <h2 class="text-base font-bold text-gray-900 m-0">Próximos Turnos</h2>
+        <span class="text-xs font-semibold text-indigo-500 bg-indigo-50 px-[0.6rem] py-[0.2rem] rounded-full">
+          {{ (proximosTurnos$ | async)?.length ?? 0 }}
+        </span>
+      </div>
+      <ng-container *ngIf="proximosTurnos$ | async as proximos">
+        <ng-container *ngIf="proximos.length > 0; else sinProximos">
+          <div class="flex flex-col gap-[0.625rem]">
+            <div *ngFor="let turno of proximos"
+                 class="bg-white rounded-3xl px-5 py-4 flex justify-between items-center shadow-[0_2px_12px_rgba(0,0,0,0.05)] border border-gray-100">
+              <div class="flex items-center gap-3">
+                <div class="bg-indigo-50 rounded-xl w-[38px] h-[38px] flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                       fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-[0.9375rem] font-semibold text-gray-900 m-0">{{ turno.zona?.nombre }}</p>
+                  <p class="text-[0.78125rem] text-gray-400 mt-0.5 m-0">{{ turno.hora_inicio }} - {{ turno.hora_fin }}</p>
+                </div>
+              </div>
+              <button class="text-xs font-semibold text-gray-400 bg-gray-100 border-none rounded-full px-4 py-[0.4375rem] cursor-pointer whitespace-nowrap transition-all duration-200 hover:bg-red-100 hover:text-red-500"
+                      (click)="noAsistir(turno)">
+                No puedo asistir
+              </button>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #sinProximos>
+          <div class="flex items-center justify-center gap-2.5 bg-white rounded-[1.375rem] p-5 border-2 border-dashed border-gray-200 text-gray-300 text-[0.8125rem] font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                 fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span>No tienes turnos próximos</span>
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+
+    <!-- COMPLETADOS HOY -->
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center justify-between px-1">
+        <h2 class="text-base font-bold text-gray-900 m-0">Completados Hoy</h2>
+        <button class="inline-flex items-center gap-1.5 text-[0.78125rem] font-semibold text-violet-700 bg-violet-50 border-none rounded-full px-3.5 py-[0.375rem] cursor-pointer transition-colors duration-200 hover:bg-violet-100">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="12 8 12 12 14 14"/>
+            <path d="M3.05 11A9 9 0 1 1 3 13"/>
+            <polyline points="3 7 3 11 7 11"/>
+          </svg>
+          Historial
+        </button>
+      </div>
+      <ng-container *ngIf="turnosCompletadosHoy$ | async as completados">
+        <ng-container *ngIf="completados.length > 0; else sinCompletados">
+          <div class="flex flex-col gap-[0.625rem]">
+            <div *ngFor="let turno of completados"
+                 class="bg-white rounded-3xl px-5 py-4 flex items-center gap-[0.875rem] shadow-[0_2px_12px_rgba(0,0,0,0.05)] border border-gray-100">
+              <div class="flex items-center gap-3 flex-1">
+                <div class="bg-emerald-100 rounded-xl w-[38px] h-[38px] flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                       fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="6"/>
+                    <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-[0.9375rem] font-semibold text-gray-900 m-0">{{ turno.zona?.nombre }}</p>
+                  <p class="text-[0.78125rem] text-gray-400 mt-0.5 m-0">{{ turno.hora_inicio }} - {{ turno.hora_fin }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 text-[0.78125rem] font-semibold text-emerald-500 whitespace-nowrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                     fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>Completado</span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #sinCompletados>
+          <div class="flex items-center justify-center gap-2.5 bg-white rounded-[1.375rem] p-5 border-2 border-dashed border-gray-200 text-gray-300 text-[0.8125rem] font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                 fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="6"/>
+              <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+            </svg>
+            <span>Ningún turno completado hoy</span>
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+
+    <!-- RANKING -->
+    <div class="bg-gradient-to-br from-purple-600 via-violet-700 to-purple-800 rounded-[3rem] px-7 py-6 flex justify-between items-center shadow-[0_10px_32px_rgba(147,51,234,0.38)] gap-4 cursor-pointer"
+         (click)="mostrarRanking = true"
+         *ngIf="metricas$ | async as metricas">
+      <div class="flex items-center gap-4">
+        <div class="bg-white/20 rounded-2xl w-[52px] h-[52px] flex items-center justify-center flex-shrink-0 backdrop-blur-sm border border-white/25">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"
+               fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="8 21 12 17 16 21"/><line x1="12" y1="17" x2="12" y2="11"/>
+            <path d="M5 4H19"/><path d="M5 4v5a7 7 0 0 0 14 0V4"/>
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <p class="text-2xl font-extrabold text-white m-0 leading-tight">{{ metricas.puntos_totales ?? 0 }} pts</p>
+          <p class="text-[0.78125rem] text-white/75 mt-1 font-medium m-0">Ranking #{{ metricas.ranking ?? 1 }} del mes</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1">
+        <ng-container *ngFor="let star of [1,2,3,4,5]">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+               [attr.fill]="star <= calcularEstrellas(metricas) ? '#facc15' : 'none'"
+               [attr.stroke]="star <= calcularEstrellas(metricas) ? '#facc15' : 'rgba(255,255,255,0.35)'">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </ng-container>
+        <p class="text-[0.6875rem] font-semibold text-white/65 ml-1 m-0">{{ calcularEstrellas(metricas) }}/5</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL NOTIFICACIONES -->
+<div *ngIf="mostrarNotificaciones"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/35 backdrop-blur-sm p-4"
+     (click)="mostrarNotificaciones = false">
+  <div class="w-full max-w-md bg-white rounded-3xl p-6 max-h-[85vh] overflow-y-auto flex flex-col gap-5"
+       (click)="$event.stopPropagation()">
+
+    <div class="flex justify-between items-center">
+      <div>
+        <p class="text-[1.0625rem] font-bold text-gray-900 m-0">Notificaciones</p>
+        <p class="text-sm text-gray-400 mt-0.5 m-0">
+          <ng-container *ngIf="(unreadCount$ | async) as c">{{ c }} sin leer</ng-container>
+        </p>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="text-[0.78125rem] font-semibold text-indigo-500 bg-transparent border-none cursor-pointer">
+          Marcar todas como leídas
+        </button>
+        <button class="bg-gray-100 border-none rounded-full w-[30px] h-[30px] flex items-center justify-center cursor-pointer flex-shrink-0"
+                (click)="mostrarNotificaciones = false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+               fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="h-px bg-gray-100 flex-shrink-0"></div>
+
+    <div>
+      <p class="text-[0.6875rem] font-bold text-gray-400 tracking-[0.08em] uppercase mb-3">Recordatorios</p>
+      <div class="flex flex-col gap-2.5">
+        <div class="bg-gray-50 rounded-[1.25rem] px-[1.125rem] py-4 flex justify-between items-center border border-gray-100">
+          <div class="flex items-center gap-3">
+            <div class="rounded-[0.625rem] w-9 h-9 flex items-center justify-center flex-shrink-0 bg-blue-50">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                   fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-gray-900 m-0">Turno en 30 minutos</p>
+              <p class="text-xs text-gray-400 mt-0.5 m-0">Patio Principal — 10:00 AM</p>
+            </div>
+          </div>
+          <button class="text-xs font-semibold text-blue-500 bg-blue-50 border-none rounded-full px-3.5 py-[0.35rem] cursor-pointer whitespace-nowrap">
+            Ver Turno
+          </button>
+        </div>
+        <div class="bg-gray-50 rounded-[1.25rem] px-[1.125rem] py-4 flex justify-between items-center border border-gray-100">
+          <div class="flex items-center gap-3">
+            <div class="rounded-[0.625rem] w-9 h-9 flex items-center justify-center flex-shrink-0 bg-amber-50">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                   fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-gray-900 m-0">Turno mañana</p>
+              <p class="text-xs text-gray-400 mt-0.5 m-0">Cancha Deportiva — 08:30 AM</p>
+            </div>
+          </div>
+          <button class="text-xs font-semibold text-blue-500 bg-blue-50 border-none rounded-full px-3.5 py-[0.35rem] cursor-pointer whitespace-nowrap">
+            Ver Turno
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="h-px bg-gray-100 flex-shrink-0"></div>
+
+    <div>
+      <p class="text-[0.6875rem] font-bold text-gray-400 tracking-[0.08em] uppercase mb-3">Logros</p>
+      <div class="flex flex-col gap-2.5">
+        <div class="rounded-[1.25rem] px-[1.125rem] py-4 flex items-center gap-3 bg-violet-50 border border-violet-100">
+          <div class="rounded-[0.625rem] w-9 h-9 flex items-center justify-center flex-shrink-0 bg-violet-700">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="8 21 12 17 16 21"/><line x1="12" y1="17" x2="12" y2="11"/>
+              <path d="M5 4H19"/><path d="M5 4v5a7 7 0 0 0 14 0V4"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-gray-900 m-0">Top 3 del mes</p>
+            <p class="text-xs text-violet-700 mt-0.5 m-0">¡Alcanzaste el podio este mes!</p>
+          </div>
+        </div>
+        <div class="rounded-[1.25rem] px-[1.125rem] py-4 flex items-center gap-3 bg-emerald-50 border border-emerald-100">
+          <div class="rounded-[0.625rem] w-9 h-9 flex items-center justify-center flex-shrink-0 bg-emerald-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                 fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-gray-900 m-0">10 turnos completados</p>
+            <p class="text-xs text-emerald-500 mt-0.5 m-0">Racha de asistencia perfecta</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL RANKING -->
+<div *ngIf="mostrarRanking"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/35 backdrop-blur-sm p-4"
+     (click)="mostrarRanking = false">
+  <div class="w-full max-w-md bg-white rounded-3xl p-6 max-h-[85vh] overflow-y-auto flex flex-col gap-5"
+       (click)="$event.stopPropagation()">
+
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="bg-gradient-to-br from-purple-600 to-violet-700 rounded-[0.875rem] w-[42px] h-[42px] flex items-center justify-center flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+               fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="8 21 12 17 16 21"/><line x1="12" y1="17" x2="12" y2="11"/>
+            <path d="M5 4H19"/><path d="M5 4v5a7 7 0 0 0 14 0V4"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-[1.0625rem] font-bold text-gray-900 m-0">Ranking Institucional</p>
+          <p class="text-[0.78125rem] text-gray-400 mt-0.5 m-0">Clasificación por puntos acumulados este mes</p>
+        </div>
+      </div>
+      <button class="bg-gray-100 border-none rounded-full w-[30px] h-[30px] flex items-center justify-center cursor-pointer flex-shrink-0"
+              (click)="mostrarRanking = false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="h-px bg-gray-100 flex-shrink-0"></div>
+
+    <div *ngIf="metricas$ | async as metricas" class="flex flex-col gap-2">
+
+      <div class="flex items-center gap-[0.875rem] px-4 py-[0.875rem] rounded-[1.25rem] bg-yellow-50 border border-yellow-200">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-extrabold text-white bg-gradient-to-br from-amber-400 to-yellow-500">1</div>
+        <div class="flex-1">
+          <p class="text-[0.9375rem] font-semibold text-gray-900 m-0">María González</p>
+          <p class="text-xs text-gray-400 m-0">Profesora de Matemáticas</p>
+        </div>
+        <span class="text-sm font-bold text-amber-500">1.240 pts</span>
+      </div>
+
+      <div class="flex items-center gap-[0.875rem] px-4 py-[0.875rem] rounded-[1.25rem] bg-slate-50 border border-slate-200">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-extrabold text-white bg-gradient-to-br from-slate-400 to-slate-600">2</div>
+        <div class="flex-1">
+          <p class="text-[0.9375rem] font-semibold text-gray-900 m-0">Carlos Rodríguez</p>
+          <p class="text-xs text-gray-400 m-0">Profesor de Ciencias</p>
+        </div>
+        <span class="text-sm font-bold text-slate-500">1.180 pts</span>
+      </div>
+
+      <div class="flex items-center gap-[0.875rem] px-4 py-[0.875rem] rounded-[1.25rem] bg-orange-50 border border-orange-200">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-extrabold text-white bg-gradient-to-br from-orange-400 to-orange-600">3</div>
+        <div class="flex-1">
+          <p class="text-[0.9375rem] font-semibold text-gray-900 m-0">Ana Martínez</p>
+          <p class="text-xs text-gray-400 m-0">Profesora de Historia</p>
+        </div>
+        <span class="text-sm font-bold text-orange-500">1.050 pts</span>
+      </div>
+
+      <div class="flex items-center gap-[0.875rem] px-4 py-[0.875rem] rounded-[1.25rem] bg-gray-50 border border-gray-100">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-extrabold text-gray-500 bg-gray-200">4</div>
+        <div class="flex-1">
+          <p class="text-[0.9375rem] font-semibold text-gray-900 m-0">Luis Pérez</p>
+          <p class="text-xs text-gray-400 m-0">Profesor de Lengua</p>
+        </div>
+        <span class="text-sm font-bold text-gray-500">980 pts</span>
+      </div>
+
+      <div class="flex items-center gap-[0.875rem] px-4 py-[0.875rem] rounded-[1.25rem] bg-violet-50 border-2 border-violet-600">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-extrabold text-white bg-gradient-to-br from-purple-600 to-violet-700">
+          {{ metricas.ranking ?? 5 }}
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <p class="text-[0.9375rem] font-semibold text-gray-900 m-0">{{ (usuario$ | async)?.nombre ?? 'Tú' }}</p>
+            <span class="text-[0.625rem] font-bold text-violet-700 bg-violet-100 px-2 py-0.5 rounded-full uppercase">Tú</span>
+          </div>
+          <p class="text-xs text-gray-400 m-0">Portal Docente</p>
+        </div>
+        <span class="text-sm font-bold text-violet-700">{{ metricas.puntos_totales ?? 0 }} pts</span>
+      </div>
+
+    </div>
+
+  </div>
+</div>
