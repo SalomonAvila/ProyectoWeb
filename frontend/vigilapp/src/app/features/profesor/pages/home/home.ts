@@ -1,8 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Observable, Subject, of, map, catchError, takeUntil, shareReplay } from 'rxjs';
-import { Router } from '@angular/router';
 
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { TurnoService } from '../../../../core/services/turno.service';
@@ -27,6 +26,9 @@ export class Home implements OnDestroy {
   proximosTurnos$!:       Observable<any[]>;
   turnosCompletadosHoy$!: Observable<any[]>;
   metricas$!:             Observable<any>;
+
+  mostrarNotificaciones = false;
+  mostrarRanking = false;
 
   private destroy$ = new Subject<void>();
 
@@ -92,9 +94,6 @@ export class Home implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({ error: err => console.error('Error al reasignar turno:', err) });
   }
-
-  mostrarNotificaciones = false;
-  mostrarRanking = false;
 
   cerrarSesion(): void {
     this.usuarioService.logout?.();
