@@ -10,6 +10,9 @@ export const routes: Routes = [
     path: 'profesor',
     loadChildren: () =>
       import('./features/profesor/profesor.routes').then(m => m.PROFESOR_ROUTES)
+    
+  },
+  {
     path: 'coordinator',
     loadChildren: () =>
       import('./features/coordinator/coordinator.routes').then(
