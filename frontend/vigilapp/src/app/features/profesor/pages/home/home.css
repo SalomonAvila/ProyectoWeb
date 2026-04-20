@@ -536,9 +536,9 @@
 /* Estrellas */
 .estrellas-wrapper {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 .estrella-svg {
@@ -549,7 +549,7 @@
   font-size: 0.6875rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.65);
-  margin: 0;
+  margin: 0 0 0 0.25rem;
   letter-spacing: 0.03em;
 }
 
@@ -570,12 +570,11 @@
     border-radius: 2rem;
     padding: 1.25rem;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 1.25rem;
   }
 
   .estrellas-wrapper {
-    flex-direction: row;
     align-items: center;
   }
 
