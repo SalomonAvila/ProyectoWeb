@@ -1,125 +1,317 @@
-<div class="min-h-screen bg-gray-100 flex justify-center p-6">
-  <div class="w-full max-w-4xl space-y-6">
+<div class="portal-wrapper">
+  <div class="portal-container">
 
-    <!-- HEADER -->
-    <div *ngIf="usuario$ | async as usuario"
-         class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-xl">
-
-      <div>
-        <h1 class="text-xl font-bold">{{ usuario.nombre }}</h1>
-        <p class="text-gray-500 text-sm">Portal Docente</p>
+    <!-- ══════════════════════════════════════
+         HEADER
+    ══════════════════════════════════════ -->
+    <div class="header">
+      <div class="header-left">
+        <h1 class="header-username">{{ (usuario$ | async)?.nombre ?? 'Usuario' }}</h1>
+        <p class="header-subtitle">Portal Docente</p>
       </div>
 
-      <div class="flex items-center gap-4">
-        <!-- Notificaciones -->
-        <div class="relative">
-          <span class="material-icons">notifications</span>
-
-          <span *ngIf="unreadCount$ | async as count"
-                class="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 rounded-full">
-            {{ count }}
-          </span>
-        </div>
-
-        <button (click)="logout()"
-                class="bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300">
-          Cerrar sesión
-        </button>
-      </div>
-    </div>
-
-    <!-- BOTON REPORTE -->
-    <a routerLink="/profesor/reportar"
-       class="block bg-red-400 text-white text-center p-6 rounded-[3rem] shadow-xl font-semibold hover:bg-red-500">
-      Reportar Incidente
-    </a>
-
-    <!-- TURNOS DISPONIBLES -->
-    <div class="bg-white p-6 rounded-2xl shadow-xl">
-      <h2 class="font-bold mb-4">Turnos Disponibles</h2>
-
-      <div *ngFor="let turno of (turnosDisponibles$ | async)">
-        <div class="flex justify-between items-center mb-3 p-4 bg-gray-50 rounded-xl">
-
-          <div>
-            <p class="font-semibold">{{ turno.zona?.nombre }}</p>
-            <p class="text-sm text-gray-500">
-              {{ turno.hora_inicio }} - {{ turno.hora_fin }}
-            </p>
-          </div>
-
-          <button (click)="tomarTurno(turno.id)"
-                  class="bg-cyan-500 text-white px-4 py-2 rounded-xl hover:bg-cyan-600">
-            Tomar Turno
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PROXIMOS TURNOS -->
-    <div class="bg-white p-6 rounded-2xl shadow-xl">
-      <h2 class="font-bold mb-4">Próximos Turnos</h2>
-
-      <div *ngFor="let turno of (proximosTurnos$ | async)">
-        <div class="flex justify-between items-center mb-3 p-4 bg-gray-50 rounded-xl">
-
-          <div>
-            <p class="font-semibold">{{ turno.zona?.nombre }}</p>
-            <p class="text-sm text-gray-500">
-              {{ turno.hora_inicio }} - {{ turno.hora_fin }}
-            </p>
-          </div>
-
-          <button (click)="noPuedoAsistir(turno.id)"
-                  class="bg-yellow-400 text-white px-4 py-2 rounded-xl hover:bg-yellow-500">
-            No puedo asistir
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- HISTORIAL -->
-    <div class="bg-white p-6 rounded-2xl shadow-xl">
-      <h2 class="font-bold mb-4">Completados Hoy</h2>
-
-      <div *ngFor="let turno of (turnosCompletadosHoy$ | async)">
-        <div class="flex justify-between items-center mb-3 p-4 bg-gray-50 rounded-xl">
-
-          <div>
-            <p class="font-semibold">{{ turno.zona?.nombre }}</p>
-            <p class="text-sm text-gray-500">
-              {{ turno.hora_inicio }} - {{ turno.hora_fin }}
-            </p>
-          </div>
-
-          <span class="text-sm text-gray-600">
-            {{ turno.recorridos?.length || 0 }} recorridos
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- METRICAS -->
-    <div *ngIf="metricas$ | async as metricas"
-         class="bg-purple-600 text-white p-6 rounded-[3rem] shadow-xl">
-
-      <div class="flex justify-between items-center">
-
-        <div>
-          <p class="text-lg font-bold">{{ metricas.puntos_totales }} pts</p>
-          <p class="text-sm">Ranking mensual: #{{ metricas.ranking }}</p>
-        </div>
-
-        <!-- ESTRELLAS -->
-        <div class="flex gap-1">
-          <ng-container *ngFor="let star of [1,2,3,4,5]">
-            <span class="material-icons"
-                  [ngClass]="star <= metricas.calificacion ? 'text-yellow-300' : 'text-gray-300'">
-              star
-            </span>
+      <div class="header-right">
+        <!-- Campana: badge rojo SOLO si hay notificaciones -->
+        <div class="bell-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+               stroke-linejoin="round" class="bell-icon">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <ng-container *ngIf="(unreadCount$ | async) as count">
+            <span *ngIf="count > 0" class="bell-badge">{{ count }}</span>
           </ng-container>
         </div>
 
+        <button class="btn-cerrar" (click)="cerrarSesion()">Cerrar Sesión</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         BOTÓN REPORTAR
+    ══════════════════════════════════════ -->
+    <a routerLink="/profesor/reportar" class="banner-reportar">
+      <div class="reportar-icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+             fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"
+             stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <div class="reportar-text">
+        <p class="reportar-title">Reportar</p>
+        <p class="reportar-subtitle">Registra un incidente de manera inmediata</p>
+      </div>
+      <svg class="reportar-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+           viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </a>
+
+    <!-- ══════════════════════════════════════
+         TURNO DISPONIBLE
+         Siempre visible: con datos o vacío
+    ══════════════════════════════════════ -->
+    <ng-container *ngIf="turnosDisponibles$ | async as disponibles">
+
+      <!-- Con turnos disponibles -->
+      <ng-container *ngIf="disponibles.length > 0; else sinTurnoDisponible">
+        <div *ngFor="let turno of disponibles" class="card-turno-disponible">
+          <div class="turno-badge">
+            <span class="badge-dot"></span>
+            Turno Disponible
+          </div>
+
+          <div class="turno-header">
+            <div class="turno-icon-circle">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                   fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div>
+              <p class="turno-disponible-title">Turno Disponible</p>
+              <p class="turno-disponible-sub">
+                {{ turno.docenteAnterior ?? 'Un docente' }} canceló este turno
+              </p>
+            </div>
+          </div>
+
+          <div class="turno-zona-card">
+            <div class="turno-zona-left">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                   fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span class="zona-nombre">{{ turno.zona?.nombre }}</span>
+            </div>
+            <div class="turno-zona-right">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                   fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span class="zona-horario">{{ turno.hora_inicio }} - {{ turno.hora_fin }}</span>
+            </div>
+          </div>
+
+          <button class="btn-tomar-turno" (click)="tomarTurno(turno)">
+            Tomar Turno
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- Sin turnos disponibles: card vacía con mensaje -->
+      <ng-template #sinTurnoDisponible>
+        <div class="card-turno-disponible card-vacia">
+          <div class="turno-badge turno-badge-gris">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Turno Disponible
+          </div>
+
+          <div class="turno-header">
+            <div class="turno-icon-circle turno-icon-gris">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                   fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div>
+              <p class="turno-disponible-title" style="color:#9ca3af">Sin turnos disponibles</p>
+              <p class="turno-disponible-sub">No hay turnos liberados en este momento</p>
+            </div>
+          </div>
+
+          <div class="turno-zona-card zona-card-vacia">
+            <div class="turno-zona-left">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                   fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span class="zona-nombre" style="color:#d1d5db">— —</span>
+            </div>
+            <div class="turno-zona-right">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                   fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span class="zona-horario" style="color:#d1d5db">--:-- - --:--</span>
+            </div>
+          </div>
+
+          <button class="btn-tomar-turno btn-tomar-disabled" disabled>
+            Sin turnos disponibles
+          </button>
+        </div>
+      </ng-template>
+
+    </ng-container>
+
+    <!-- ══════════════════════════════════════
+         PRÓXIMOS TURNOS
+    ══════════════════════════════════════ -->
+    <div class="seccion">
+      <div class="seccion-header">
+        <h2 class="seccion-titulo">Próximos Turnos</h2>
+        <span class="seccion-count">{{ (proximosTurnos$ | async)?.length ?? 0 }}</span>
+      </div>
+
+      <ng-container *ngIf="proximosTurnos$ | async as proximos">
+        <ng-container *ngIf="proximos.length > 0; else sinProximos">
+          <div class="turnos-list">
+            <div *ngFor="let turno of proximos" class="card-proximo-turno">
+              <div class="proximo-left">
+                <div class="proximo-zona-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                       fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round"
+                       stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="proximo-nombre">{{ turno.zona?.nombre }}</p>
+                  <p class="proximo-horario">{{ turno.hora_inicio }} - {{ turno.hora_fin }}</p>
+                </div>
+              </div>
+              <button class="btn-no-asistir" (click)="noAsistir(turno)">
+                No puedo asistir
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #sinProximos>
+          <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                 fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round"
+                 stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span>No tienes turnos próximos</span>
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         COMPLETADOS HOY
+    ══════════════════════════════════════ -->
+    <div class="seccion">
+      <div class="seccion-header">
+        <h2 class="seccion-titulo">Completados Hoy</h2>
+        <button class="btn-historial">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+               stroke-linejoin="round">
+            <polyline points="12 8 12 12 14 14"/>
+            <path d="M3.05 11A9 9 0 1 1 3 13"/>
+            <polyline points="3 7 3 11 7 11"/>
+          </svg>
+          Historial
+        </button>
+      </div>
+
+      <ng-container *ngIf="turnosCompletadosHoy$ | async as completados">
+        <ng-container *ngIf="completados.length > 0; else sinCompletados">
+          <div class="turnos-list">
+            <div *ngFor="let turno of completados" class="card-completado">
+              <div class="completado-left">
+                <div class="ribbon-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                       fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"
+                       stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="6"/>
+                    <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="completado-nombre">{{ turno.zona?.nombre }}</p>
+                  <p class="completado-horario">{{ turno.hora_inicio }} - {{ turno.hora_fin }}</p>
+                </div>
+              </div>
+              <div class="completado-status">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                     fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"
+                     stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>Completado</span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #sinCompletados>
+          <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                 fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round"
+                 stroke-linejoin="round">
+              <circle cx="12" cy="8" r="6"/>
+              <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+            </svg>
+            <span>Ningún turno completado hoy</span>
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         RANKING Y PUNTOS
+         Siempre visible, muestra 0 si no hay datos
+    ══════════════════════════════════════ -->
+    <div class="banner-ranking" *ngIf="metricas$ | async as metricas">
+      <div class="ranking-left">
+        <div class="trofeo-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"
+               fill="none" stroke="white" stroke-width="2" stroke-linecap="round"
+               stroke-linejoin="round">
+            <polyline points="8 21 12 17 16 21"/>
+            <line x1="12" y1="17" x2="12" y2="11"/>
+            <path d="M5 4H19"/>
+            <path d="M5 4v5a7 7 0 0 0 14 0V4"/>
+          </svg>
+        </div>
+        <div class="ranking-info">
+          <p class="ranking-puntos">{{ metricas.puntos_totales ?? 0 }} pts</p>
+          <p class="ranking-posicion">Ranking #{{ metricas.ranking ?? 1 }} del mes</p>
+        </div>
+      </div>
+
+      <div class="estrellas-wrapper">
+        <ng-container *ngFor="let star of [1,2,3,4,5]">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+               [attr.fill]="star <= calcularEstrellas(metricas) ? '#facc15' : 'none'"
+               [attr.stroke]="star <= calcularEstrellas(metricas) ? '#facc15' : 'rgba(255,255,255,0.35)'"
+               class="estrella-svg">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </ng-container>
+        <p class="estrellas-label">{{ calcularEstrellas(metricas) }}/5</p>
       </div>
     </div>
 
