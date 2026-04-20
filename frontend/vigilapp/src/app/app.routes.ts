@@ -10,15 +10,5 @@ export const routes: Routes = [
     path: 'profesor',
     loadChildren: () =>
       import('./features/profesor/profesor.routes').then(m => m.PROFESOR_ROUTES)
-  },
-  {
-    path: 'profesor/home',
-    loadComponent: () =>
-      import('./features/profesor/pages/home/home').then(m => m.Home)
-  },
-  {
-    path: 'profesor/reportar',
-    loadComponent: () =>
-      import('./features/profesor/pages/reporte/reporte').then(m => m.Reporte)
   }
 ];

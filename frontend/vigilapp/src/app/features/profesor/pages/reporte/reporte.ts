@@ -1,16 +1,17 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { GlassCard } from '../../../../shared/ui/glass-card/glass-card';
 
 @Component({
   selector: 'app-reporte',
   imports: [CommonModule, FormsModule, GlassCard],
   templateUrl: './reporte.html',
-  styleUrl: './reporte.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Reporte {
+  constructor(private router: Router) {}
   zonas = [
     { id: 1, nombre: 'Patio Principal', descripcion: 'Área central de recreo' },
     { id: 2, nombre: 'Cancha Deportiva', descripcion: 'Zona de deporte' },
@@ -73,11 +74,7 @@ export class Reporte {
   }
 
   cancelar() {
-    this.zonaSeleccionada.set(null);
-    this.tipoSeleccionado.set(null);
-    this.severidadSeleccionada.set(null);
-    this.descripcion.set('');
-    this.departamentosSeleccionados.set(new Set());
+    this.router.navigate(['/profesor/home']);
   }
 
   registrar() {

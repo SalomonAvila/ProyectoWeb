@@ -17,8 +17,7 @@ const METRICAS_FALLBACK   = { puntos_totales: 0, ranking: 1, puntualidad_porcent
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './home.html',
-  styleUrls: ['./home.css']
+  templateUrl: './home.html'
 })
 export class Home implements OnDestroy {
 
@@ -94,9 +93,12 @@ export class Home implements OnDestroy {
       .subscribe({ error: err => console.error('Error al reasignar turno:', err) });
   }
 
+  mostrarNotificaciones = false;
+  mostrarRanking = false;
+
   cerrarSesion(): void {
     this.usuarioService.logout?.();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']);
   }
 
   calcularEstrellas(metricas: any): number {
