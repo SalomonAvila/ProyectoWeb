@@ -10,7 +10,7 @@ import { MetricasService } from '../../../../core/services/metricas.service';
 import { NotificacionService } from '../../../../core/services/notificacion.service';
 
 /* ── Fallbacks para cuando el backend no responde ── */
-const USUARIO_FALLBACK    = { nombre: 'rcanamromero' };
+const USUARIO_FALLBACK    = { nombre: 'Usuario' };
 const METRICAS_FALLBACK   = { puntos_totales: 0, ranking: 1, puntualidad_porcentaje: 0, recorridos_promedio: 0 };
 
 @Component({
