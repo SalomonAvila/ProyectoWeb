@@ -1,0 +1,297 @@
+<div class="min-h-screen"
+     style="background: radial-gradient(ellipse at 20% 20%, rgba(199,210,254,0.55) 0%, transparent 55%), radial-gradient(ellipse at 80% 10%, rgba(186,230,253,0.45) 0%, transparent 50%), radial-gradient(ellipse at 60% 80%, rgba(243,232,255,0.45) 0%, transparent 55%), #f8faff">
+
+  <app-page-header title="Gestión de Turnos"
+                   subtitle="Asignar y programar turnos"
+                   [showBack]="true">
+    <button type="button"
+            (click)="viewCalendar()"
+            class="px-3 sm:px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 font-semibold rounded-full transition-all flex items-center gap-2 text-xs sm:text-sm cursor-pointer border-none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <span class="hidden sm:inline">Vista Calendario</span>
+    </button>
+
+    <button type="button"
+            (click)="bulkUpload()"
+            class="px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-full transition-all flex items-center gap-2 text-xs sm:text-sm cursor-pointer border-none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      <span class="hidden sm:inline">Importar</span>
+    </button>
+
+    <button type="button"
+            (click)="openAdd()"
+            class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-full transition-all flex items-center gap-2 text-xs sm:text-sm shadow-lg shadow-blue-500/30">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      <span>Nuevo Turno</span>
+    </button>
+  </app-page-header>
+
+  <ng-container *ngIf="vm$ | async as vm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8">
+
+      <!-- STATS -->
+      <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <app-stat-card label="Total Hoy"   [value]="vm.total"   icon="calendar" color="blue"></app-stat-card>
+        <app-stat-card label="Cubiertos"   [value]="vm.covered" icon="check"    color="green"></app-stat-card>
+        <app-stat-card label="Pendientes"  [value]="vm.pending" icon="clock"    color="yellow"></app-stat-card>
+        <app-stat-card label="Sin Cubrir"  [value]="vm.missed"  icon="alert"    color="red"></app-stat-card>
+      </section>
+
+      <!-- SHIFTS LIST -->
+      <section class="space-y-3">
+        <div *ngFor="let shift of vm.today"
+             class="bg-white/70 backdrop-blur-xl border border-white/60 rounded-xl sm:rounded-2xl p-4 sm:px-6 sm:py-5 shadow-sm hover:shadow-md transition-all group">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 flex-1 min-w-0">
+              <div class="px-3 py-1.5 rounded-full self-start {{ statusClass(shift.status) }}">
+                <span class="text-xs font-semibold">{{ statusLabel(shift.status) }}</span>
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-gray-900 mb-0.5 text-sm sm:text-base truncate m-0">{{ shift.zoneName }}</h3>
+                <p class="text-xs sm:text-sm text-gray-500 truncate m-0">{{ shift.teacherName }}</p>
+              </div>
+
+              <div class="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <span>{{ shift.startTime }} - {{ shift.endTime }}</span>
+              </div>
+
+              <div *ngIf="shift.checkInTime" class="text-xs sm:text-sm text-gray-500">
+                Check-in: {{ shift.checkInTime }}
+              </div>
+            </div>
+
+            <button type="button"
+                    (click)="deleteShift(shift)"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-red-50 transition-colors sm:opacity-0 sm:group-hover:opacity-100 self-end sm:self-auto bg-transparent border-none cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                   fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <app-glass-card *ngIf="vm.today.length === 0">
+          <div class="text-center">
+            <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-purple-50 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" stroke="#9333ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <h3 class="text-base font-semibold text-gray-700 mb-1">No hay turnos programados para hoy</h3>
+            <p class="text-sm text-gray-400">Crea un nuevo turno desde el botón superior.</p>
+          </div>
+        </app-glass-card>
+      </section>
+    </div>
+
+    <!-- CALENDAR MODAL -->
+    <app-modal [open]="isCalendarOpen"
+               title="Vista Calendario"
+               description="Turnos programados por día"
+               maxWidth="max-w-3xl"
+               (openChange)="closeCalendar()">
+      <div class="space-y-5">
+
+        <!-- Month nav -->
+        <div class="flex items-center justify-between gap-3">
+          <button type="button"
+                  (click)="prevMonth()"
+                  class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors border-none cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+
+          <div class="flex flex-col items-center">
+            <span class="text-base sm:text-lg font-semibold text-gray-900 capitalize">{{ vm.monthLabel }}</span>
+            <button type="button"
+                    (click)="goToToday()"
+                    class="text-xs text-blue-600 hover:text-blue-700 bg-transparent border-none cursor-pointer p-0 mt-0.5">
+              Ir a hoy
+            </button>
+          </div>
+
+          <button type="button"
+                  (click)="nextMonth()"
+                  class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors border-none cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Weekday headers -->
+        <div class="grid grid-cols-7 gap-1 sm:gap-2">
+          <div *ngFor="let w of weekdayLabels"
+               class="text-center text-[0.6875rem] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider py-1">
+            {{ w }}
+          </div>
+        </div>
+
+        <!-- Day cells -->
+        <div class="grid grid-cols-7 gap-1 sm:gap-2">
+          <button *ngFor="let day of vm.monthDays"
+                  type="button"
+                  (click)="selectDay(day)"
+                  [disabled]="!day.inMonth"
+                  [class.opacity-40]="!day.inMonth"
+                  [class.cursor-default]="!day.inMonth"
+                  [class.bg-blue-600]="day.isSelected && day.inMonth"
+                  [class.text-white]="day.isSelected && day.inMonth"
+                  [class.ring-2]="day.isToday && !day.isSelected"
+                  [class.ring-blue-400]="day.isToday && !day.isSelected"
+                  [class.bg-white]="!day.isSelected"
+                  [class.hover:bg-blue-50]="day.inMonth && !day.isSelected"
+                  class="aspect-square min-h-[56px] sm:min-h-[72px] rounded-xl sm:rounded-2xl border border-gray-100 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer p-1">
+            <span class="text-xs sm:text-sm font-semibold"
+                  [class.text-gray-900]="!day.isSelected"
+                  [class.text-white]="day.isSelected">{{ day.day }}</span>
+
+            <div *ngIf="day.total > 0" class="flex items-center gap-0.5">
+              <span *ngIf="day.covered > 0"
+                    class="w-1.5 h-1.5 rounded-full"
+                    [class.bg-green-500]="!day.isSelected"
+                    [class.bg-white]="day.isSelected"></span>
+              <span *ngIf="day.pending > 0"
+                    class="w-1.5 h-1.5 rounded-full"
+                    [class.bg-yellow-500]="!day.isSelected"
+                    [class.bg-white]="day.isSelected"></span>
+              <span *ngIf="day.missed > 0"
+                    class="w-1.5 h-1.5 rounded-full"
+                    [class.bg-red-500]="!day.isSelected"
+                    [class.bg-white]="day.isSelected"></span>
+            </div>
+
+            <span *ngIf="day.total > 0"
+                  class="text-[0.625rem] sm:text-xs font-medium"
+                  [class.text-gray-600]="!day.isSelected"
+                  [class.text-white]="day.isSelected">
+              {{ day.total }}
+            </span>
+          </button>
+        </div>
+
+        <!-- Legend -->
+        <div class="flex items-center justify-center gap-4 text-xs text-gray-600 pt-2 border-t border-gray-100">
+          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green-500"></span>Cubiertos</span>
+          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-yellow-500"></span>Pendientes</span>
+          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500"></span>Sin cubrir</span>
+        </div>
+
+        <!-- Selected day detail -->
+        <div *ngIf="vm.selectedDay" class="space-y-2">
+          <div class="flex items-center justify-between gap-3">
+            <h4 class="text-sm font-semibold text-gray-900 m-0">
+              Turnos del {{ vm.selectedDay }}
+            </h4>
+            <button type="button"
+                    (click)="scheduleOnDate(vm.selectedDay)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-semibold rounded-full transition-colors border-none cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Asignar
+            </button>
+          </div>
+
+          <div *ngIf="vm.selectedDayShifts.length === 0"
+               class="bg-gray-50 rounded-xl p-5 text-center text-sm text-gray-500">
+            No hay turnos programados para este día.
+          </div>
+
+          <div *ngFor="let shift of vm.selectedDayShifts"
+               class="bg-gray-50 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+              <div class="px-2.5 py-0.5 rounded-full {{ statusClass(shift.status) }} flex-shrink-0">
+                <span class="text-[0.6875rem] font-semibold">{{ statusLabel(shift.status) }}</span>
+              </div>
+              <div class="min-w-0">
+                <div class="text-sm font-semibold text-gray-900 truncate">{{ shift.zoneName }}</div>
+                <div class="text-xs text-gray-500 truncate">{{ shift.teacherName }}</div>
+              </div>
+            </div>
+            <span class="text-xs text-gray-600 flex-shrink-0">{{ shift.startTime }} - {{ shift.endTime }}</span>
+          </div>
+        </div>
+      </div>
+    </app-modal>
+
+    <!-- ADD MODAL -->
+    <app-modal [open]="isAddOpen"
+               title="Asignar Turno"
+               description="Asigna un docente a una zona"
+               (openChange)="closeAdd()">
+      <form class="space-y-4" (ngSubmit)="addShift(vm.teachers, vm.zones)">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Docente</label>
+          <select [(ngModel)]="form.teacherId" name="teacherId"
+                  class="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            <option value="">Seleccionar docente</option>
+            <option *ngFor="let t of vm.teachers" [value]="t.id">{{ t.name }} - {{ t.department }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Zona</label>
+          <select [(ngModel)]="form.zoneId" name="zoneId"
+                  class="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            <option value="">Seleccionar zona</option>
+            <option *ngFor="let z of vm.zones" [value]="z.id">{{ z.name }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Fecha</label>
+          <input type="date"
+                 [(ngModel)]="form.date" name="date"
+                 class="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Hora Inicio</label>
+            <input type="time"
+                   [(ngModel)]="form.startTime" name="startTime"
+                   class="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Hora Fin</label>
+            <input type="time"
+                   [(ngModel)]="form.endTime" name="endTime"
+                   class="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+          </div>
+        </div>
+
+        <button type="submit"
+                class="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-full transition-all shadow-lg shadow-blue-500/30">
+          Asignar Turno
+        </button>
+      </form>
+    </app-modal>
+  </ng-container>
+</div>

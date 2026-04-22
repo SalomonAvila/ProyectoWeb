@@ -1,0 +1,148 @@
+<div class="min-h-screen"
+     style="background: radial-gradient(ellipse at 20% 20%, rgba(199,210,254,0.55) 0%, transparent 55%), radial-gradient(ellipse at 80% 10%, rgba(186,230,253,0.45) 0%, transparent 50%), radial-gradient(ellipse at 60% 80%, rgba(243,232,255,0.45) 0%, transparent 55%), #f8faff">
+
+  <app-page-header title="Gestión de Zonas"
+                   subtitle="Administrar áreas de vigilancia"
+                   [showBack]="true">
+    <button type="button"
+            (click)="openAdd()"
+            class="px-4 sm:px-5 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-full transition-all flex items-center gap-2 text-sm shadow-lg shadow-blue-500/30">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      <span>Nueva Zona</span>
+    </button>
+  </app-page-header>
+
+  <div *ngIf="zones$ | async as zones"
+       class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-3 sm:space-y-4">
+
+    <!-- EMPTY STATE -->
+    <app-glass-card *ngIf="zones.length === 0">
+      <div class="text-center">
+        <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-blue-50 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+               fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <h3 class="text-base font-semibold text-gray-700 mb-1">Sin zonas registradas</h3>
+        <p class="text-sm text-gray-400">Agrega la primera zona de vigilancia con el botón superior.</p>
+      </div>
+    </app-glass-card>
+
+    <div *ngFor="let zone of zones"
+         class="bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm hover:shadow-lg transition-all group">
+      <div class="flex flex-col sm:flex-row items-start justify-between gap-4">
+        <div class="flex-1 min-w-0 w-full">
+          <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-1 break-words">{{ zone.name }}</h3>
+          <p class="text-sm text-gray-500 mb-4 break-words">{{ zone.description }}</p>
+          <div class="flex flex-wrap items-center gap-2 text-sm">
+            <div class="px-3 py-1.5 bg-gray-100 rounded-full text-xs text-gray-600">
+              {{ zone.checkpoints.length }} puntos de control
+            </div>
+            <button type="button"
+                    (click)="generateQR(zone)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors text-xs font-semibold cursor-pointer border-none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+              </svg>
+              <span>Generar QR</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity self-end sm:self-start">
+          <button type="button"
+                  (click)="openEdit(zone)"
+                  class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors bg-transparent border-none cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+          <button type="button"
+                  (click)="deleteZone(zone)"
+                  class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-red-50 transition-colors bg-transparent border-none cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD MODAL -->
+  <app-modal [open]="isAddOpen"
+             title="Agregar Zona"
+             description="Define una nueva área de vigilancia"
+             (openChange)="closeAdd()">
+    <form class="space-y-4" (ngSubmit)="addZone()">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nombre</label>
+        <input type="text"
+               [(ngModel)]="form.name" name="name"
+               placeholder="ej. Patio Principal"
+               class="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Descripción</label>
+        <textarea [(ngModel)]="form.description" name="description"
+                  placeholder="Describe el área..."
+                  rows="3"
+                  class="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">
+          Puntos de Control <span class="text-gray-400 font-normal">(separados por coma)</span>
+        </label>
+        <input type="text"
+               [(ngModel)]="form.checkpoints" name="checkpoints"
+               placeholder="Punto A, Punto B, Punto C"
+               class="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+      </div>
+      <button type="submit"
+              class="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-full transition-all shadow-lg shadow-blue-500/30">
+        Agregar Zona
+      </button>
+    </form>
+  </app-modal>
+
+  <!-- EDIT MODAL -->
+  <app-modal [open]="!!editingZone"
+             title="Editar Zona"
+             description="Modifica los datos de la zona"
+             (openChange)="closeEdit()">
+    <form class="space-y-4" (ngSubmit)="updateZone()">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nombre</label>
+        <input type="text"
+               [(ngModel)]="form.name" name="edit-name"
+               class="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Descripción</label>
+        <textarea [(ngModel)]="form.description" name="edit-description"
+                  rows="3"
+                  class="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Puntos de Control</label>
+        <input type="text"
+               [(ngModel)]="form.checkpoints" name="edit-checkpoints"
+               class="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+      </div>
+      <button type="submit"
+              class="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-full transition-all shadow-lg shadow-blue-500/30">
+        Actualizar Zona
+      </button>
+    </form>
+  </app-modal>
+</div>

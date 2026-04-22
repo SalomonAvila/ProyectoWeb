@@ -1,1 +1,176 @@
-<p>home works!</p>
+<div class="min-h-screen"
+     style="background: radial-gradient(ellipse at 20% 20%, rgba(199,210,254,0.55) 0%, transparent 55%), radial-gradient(ellipse at 80% 10%, rgba(186,230,253,0.45) 0%, transparent 50%), radial-gradient(ellipse at 60% 80%, rgba(243,232,255,0.45) 0%, transparent 55%), #f8faff">
+
+  <!-- HEADER -->
+  <app-page-header [title]="((usuario$ | async)?.nombre) ?? 'Administrador'"
+                   subtitle="Panel de Administración">
+    <button type="button"
+            (click)="cerrarSesion()"
+            class="text-sm text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer px-3 py-2">
+      Cerrar Sesión
+    </button>
+  </app-page-header>
+
+  <div *ngIf="viewModel$ | async as vm"
+       class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-12 space-y-8 sm:space-y-14">
+
+    <!-- STATS -->
+    <section>
+      <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 sm:mb-6 px-1">
+        Resumen del Sistema
+      </h2>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <app-stat-card *ngFor="let stat of vm.stats"
+                       [label]="stat.label"
+                       [value]="stat.value"
+                       [icon]="stat.icon"
+                       [color]="stat.color"
+                       [clickable]="true"
+                       (clicked)="openStat(stat)">
+        </app-stat-card>
+      </div>
+    </section>
+
+    <!-- MODULES -->
+    <section>
+      <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 sm:mb-6 px-1">
+        Módulos de Administración
+      </h2>
+      <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
+        <app-module-card
+          title="Gestión de Zonas"
+          description="Administrar áreas de vigilancia y códigos QR"
+          icon="map" color="blue"
+          path="/administrator/zones"
+          [badge]="vm.activeZones + ' zonas'">
+        </app-module-card>
+
+        <app-module-card
+          title="Gestión de Turnos"
+          description="Asignar y programar turnos de vigilancia"
+          icon="calendar" color="purple"
+          path="/administrator/shifts"
+          [badge]="vm.completedShifts + ' hoy'">
+        </app-module-card>
+
+        <app-module-card
+          title="Configuración"
+          description="Reglas, parámetros y gamificación"
+          icon="settings" color="green"
+          path="/administrator/config"
+          badge="Sistema">
+        </app-module-card>
+
+        <app-module-card
+          title="Reportes y Auditoría"
+          description="Historial, logs y exportación"
+          icon="file" color="orange"
+          path="/administrator/reports"
+          badge="Registros">
+        </app-module-card>
+      </div>
+    </section>
+
+    <!-- SYSTEM INFO -->
+    <section>
+      <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 text-white shadow-xl shadow-blue-500/20">
+        <div class="flex items-start gap-4 mb-6">
+          <div class="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"
+                 fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl sm:text-2xl font-semibold mb-2 m-0">Sistema de Vigilancia Docente</h3>
+            <p class="text-sm sm:text-base text-blue-100 m-0">Plataforma integral para gestión preventiva de espacios escolares</p>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-3 sm:gap-4 text-sm sm:text-base">
+          <div class="flex items-center gap-3 p-3 sm:p-4 bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span class="text-blue-50">Zonas con códigos QR únicos</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 sm:p-4 bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span class="text-blue-50">Asignación inteligente de turnos</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 sm:p-4 bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            <span class="text-blue-50">Monitoreo en tiempo real</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 sm:p-4 bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+            </svg>
+            <span class="text-blue-50">Reportes</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK STATS -->
+    <section>
+      <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 sm:mb-6 px-1">
+        Actividad Reciente
+      </h2>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <app-stat-card label="Turnos Completados Hoy" [value]="vm.completedShifts"
+                       icon="check" color="green"></app-stat-card>
+        <app-stat-card label="Zonas Cubiertas"        [value]="vm.activeZones + '/' + vm.totalZones"
+                       icon="map"   color="blue"></app-stat-card>
+        <app-stat-card label="Docentes Activos"       [value]="vm.teachers"
+                       icon="users" color="purple"></app-stat-card>
+      </div>
+    </section>
+  </div>
+
+  <!-- STAT DETAIL MODAL -->
+  <app-modal [open]="!!selectedStat"
+             [title]="selectedStat?.label || ''"
+             description="Detalles y listado completo"
+             (openChange)="closeStat()">
+    <ng-container *ngIf="selectedStat">
+      <div class="rounded-2xl p-6 text-center"
+           [ngClass]="{
+             'bg-blue-50':   selectedStat.color === 'blue',
+             'bg-purple-50': selectedStat.color === 'purple',
+             'bg-green-50':  selectedStat.color === 'green',
+             'bg-orange-50': selectedStat.color === 'orange'
+           }">
+        <div class="text-5xl font-bold mb-2"
+             [ngClass]="{
+               'text-blue-600':   selectedStat.color === 'blue',
+               'text-purple-600': selectedStat.color === 'purple',
+               'text-green-600':  selectedStat.color === 'green',
+               'text-orange-600': selectedStat.color === 'orange'
+             }">
+          {{ selectedStat.value }}
+        </div>
+        <div class="text-sm text-gray-700">{{ selectedStat.label }}</div>
+      </div>
+      <div class="space-y-2 max-h-72 overflow-y-auto">
+        <div *ngFor="let detail of selectedStat.details"
+             class="bg-gray-50 rounded-xl p-4 text-sm text-gray-700">
+          {{ detail }}
+        </div>
+        <div *ngIf="selectedStat.details.length === 0"
+             class="bg-gray-50 rounded-xl p-6 text-sm text-gray-400 text-center">
+          Sin datos disponibles
+        </div>
+      </div>
+    </ng-container>
+  </app-modal>
+</div>

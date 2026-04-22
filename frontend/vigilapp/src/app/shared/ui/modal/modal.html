@@ -1,0 +1,24 @@
+<div *ngIf="open"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/35 backdrop-blur-sm p-4 animate-fade-in"
+     (click)="close()">
+  <div class="w-full {{ maxWidth }} bg-white rounded-3xl p-6 sm:p-7 max-h-[90vh] overflow-y-auto flex flex-col gap-5 shadow-2xl"
+       (click)="$event.stopPropagation()">
+
+    <div class="flex justify-between items-start gap-4">
+      <div class="min-w-0 flex-1">
+        <h2 *ngIf="title" class="text-xl sm:text-2xl font-semibold text-gray-900 m-0">{{ title }}</h2>
+        <p *ngIf="description" class="text-sm text-gray-500 mt-1 m-0">{{ description }}</p>
+      </div>
+      <button type="button"
+              (click)="close()"
+              class="bg-gray-100 border-none rounded-full w-8 h-8 flex items-center justify-center cursor-pointer flex-shrink-0 hover:bg-gray-200 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <ng-content></ng-content>
+  </div>
+</div>
