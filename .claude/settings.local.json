@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(npx --no-install ng build --configuration=development)",
-      "PowerShell(Get-Command node, npm, npx -ErrorAction SilentlyContinue)"
-    ]
-  }
-}
