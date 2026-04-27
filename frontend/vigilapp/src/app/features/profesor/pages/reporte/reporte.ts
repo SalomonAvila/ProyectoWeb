@@ -13,12 +13,10 @@ import { GlassCard } from '../../../../shared/ui/glass-card/glass-card';
 export class Reporte {
   constructor(private router: Router) {}
   zonas = [
-    { id: 1, nombre: 'Patio Principal', descripcion: 'Área central de recreo' },
-    { id: 2, nombre: 'Cancha Deportiva', descripcion: 'Zona de deporte' },
-    { id: 3, nombre: 'Cafetería', descripcion: 'Área de comedor' },
-    { id: 4, nombre: 'Jardín', descripcion: 'Zona verde' },
-    { id: 5, nombre: 'Pasillo Primaria', descripcion: 'Corredor edificio A' },
-    { id: 6, nombre: 'Aula de Clases', descripcion: 'Espacio académico' },
+    { id: 1, nombre: 'Bloque A', descripcion: 'Ingreso principal y pasillos administrativos', intensidad: 2 },
+    { id: 2, nombre: 'Bloque B', descripcion: 'Aulas de ciencias y laboratorios', intensidad: 5 },
+    { id: 3, nombre: 'Patio Central', descripcion: 'Zona de recreo y circulación de estudiantes', intensidad: 6 },
+    { id: 4, nombre: 'Bloque C', descripcion: 'Biblioteca, sala de docentes y apoyo académico', intensidad: 3 },
   ];
 
   tiposIncidente = [
@@ -75,6 +73,31 @@ export class Reporte {
 
   cancelar() {
     this.router.navigate(['/profesor/home']);
+  }
+
+  getColorForIntensidad(intensidad: number): string {
+    // Escala de riesgo: 1-3 VERDE (Low), 4-7 NARANJA (Medium), 8-9 ROJO (High), 10 ROJO OSCURO (Extreme)
+    if (intensidad <= 3) {
+      return '#16a34a'; // Verde
+    } else if (intensidad <= 7) {
+      return '#d97706'; // Naranja
+    } else if (intensidad <= 9) {
+      return '#dc2626'; // Rojo
+    } else {
+      return '#7f1d1d'; // Rojo oscuro
+    }
+  }
+
+  getIntensidadLabel(intensidad: number): string {
+    if (intensidad <= 3) {
+      return 'Low';
+    } else if (intensidad <= 7) {
+      return 'Medium';
+    } else if (intensidad <= 9) {
+      return 'High';
+    } else {
+      return 'Extreme';
+    }
   }
 
   registrar() {

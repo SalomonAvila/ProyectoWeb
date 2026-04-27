@@ -229,4 +229,31 @@ export class CoordinatorZoneMap {
         return 'radial-gradient(circle, rgba(52,211,153,0.24) 0%, rgba(52,211,153,0.14) 38%, rgba(52,211,153,0.06) 66%, rgba(52,211,153,0) 82%)';
     }
   }
+
+  getColorForIntensidad(intensidad: number | undefined): string {
+    if (!intensidad) return '#9ca3af'; // Gris por defecto
+    // Escala de riesgo: 1-3 VERDE (Low), 4-7 NARANJA (Medium), 8-9 ROJO (High), 10 ROJO OSCURO (Extreme)
+    if (intensidad <= 3) {
+      return '#16a34a'; // Verde
+    } else if (intensidad <= 7) {
+      return '#d97706'; // Naranja
+    } else if (intensidad <= 9) {
+      return '#dc2626'; // Rojo
+    } else {
+      return '#7f1d1d'; // Rojo oscuro
+    }
+  }
+
+  getIntensidadLabel(intensidad: number | undefined): string {
+    if (!intensidad) return 'Sin definir';
+    if (intensidad <= 3) {
+      return 'Low';
+    } else if (intensidad <= 7) {
+      return 'Medium';
+    } else if (intensidad <= 9) {
+      return 'High';
+    } else {
+      return 'Extreme';
+    }
+  }
 }

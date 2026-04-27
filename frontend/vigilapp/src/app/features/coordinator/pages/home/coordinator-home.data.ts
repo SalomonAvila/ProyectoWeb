@@ -27,28 +27,32 @@ export const MOCK_ZONES: CoordinatorZone[] = [
     name: 'Bloque A',
     description: 'Ingreso principal y pasillos administrativos.',
     capacity: 180,
-    checkpoints: ['Entrada principal', 'Recepción', 'Pasillo norte']
+    checkpoints: ['Entrada principal', 'Recepción', 'Pasillo norte'],
+    intensidad: 2
   },
   {
     id: 'z2',
     name: 'Bloque B',
     description: 'Aulas de ciencias y laboratorios.',
     capacity: 220,
-    checkpoints: ['Laboratorio 1', 'Laboratorio 2', 'Escaleras este']
+    checkpoints: ['Laboratorio 1', 'Laboratorio 2', 'Escaleras este'],
+    intensidad: 5
   },
   {
     id: 'z3',
     name: 'Patio Central',
     description: 'Zona de recreo y circulación de estudiantes.',
     capacity: 320,
-    checkpoints: ['Cancha', 'Bancas centrales', 'Salida oeste']
+    checkpoints: ['Cancha', 'Bancas centrales', 'Salida oeste'],
+    intensidad: 6
   },
   {
     id: 'z4',
     name: 'Bloque C',
     description: 'Biblioteca, sala de docentes y apoyo académico.',
     capacity: 150,
-    checkpoints: ['Biblioteca', 'Sala docente', 'Acceso sur']
+    checkpoints: ['Biblioteca', 'Sala docente', 'Acceso sur'],
+    intensidad: 3
   }
 ];
 
