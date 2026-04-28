@@ -47,7 +47,7 @@ export interface AuditLog {
   id: string;
   action: string;
   details: string;
-  role: 'Docente' | 'Coordinador' | 'Admin';
+  role: 'Docente' | 'Coordinador' | 'Administrador';
   user: string;
   timestamp: string;
 }

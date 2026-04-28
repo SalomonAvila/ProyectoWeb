@@ -13,8 +13,8 @@ import { LoginResponse } from '../../../../core/models/user/login-response';
 const ROUTES_BY_ROLE: Record<string, string> = {
   'coordinador': '/coordinator/home',
   'profesor': '/profesor/home',
-  'administrador': '/coordinator/home',
-  'admin': '/coordinator/home',
+  'administrador': '/administrator/home',
+  'admin': '/administrator/home',
 };
 
 @Component({
@@ -53,7 +53,7 @@ export class LoginPage {
 
          this.auth.setUser(response, this.rememberMe);
 
-         const route = ROUTES_BY_ROLE[response.role.toLowerCase()] || '/profesor/dashboard';
+         const route = ROUTES_BY_ROLE[response.role.toLowerCase()] || '/administrator/home';
          console.log('Navigating to:', route);
          this.router.navigateByUrl(route);
        },

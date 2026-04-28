@@ -13,7 +13,7 @@ import { GlassCard } from '../../../../shared/ui/glass-card/glass-card';
 import { StatCard } from '../../../../shared/ui/stat-card/stat-card';
 
 type Tab = 'audit' | 'incidents' | 'performance';
-type RoleFilter = 'all' | 'docente' | 'coordinador' | 'admin';
+type RoleFilter = 'all' | 'docente' | 'coordinador' | 'administrador';
 
 interface ReportsVM {
   auditLogs: AuditLog[];
