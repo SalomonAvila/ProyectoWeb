@@ -30,13 +30,12 @@
 
 ## Descripción
 
-**VigilApp** es una aplicación web con arquitectura **frontend + backend + base de datos**, contenerizada con Docker Compose.
+**VigilApp** es una aplicación web con arquitectura **frontend + backend + base de datos en Supabase**, contenerizada con Docker Compose.
 
 El proyecto incluye:
 - **Frontend** en Angular 21 (SSR) con Tailwind CSS
 - **Backend** construido con Java (Spring Boot)
-- **Base de datos** PostgreSQL con inicialización automática vía `init.sql`
-- **Panel de administración** de base de datos con pgAdmin
+- **Base de datos** PostgreSQL administrada en Supabase
 - **CI/CD** configurado con GitHub Actions
 
 ---
@@ -47,8 +46,7 @@ El proyecto incluye:
 |------|-----------|
 | Frontend | Angular 21 · TypeScript · SSR · Tailwind CSS |
 | Backend | Java · Spring Boot |
-| Base de datos | PostgreSQL 15 |
-| DB Admin | pgAdmin 4 |
+| Base de datos | Supabase (PostgreSQL) |
 | Contenedores | Docker · Docker Compose |
 | CI/CD | GitHub Actions |
 
@@ -128,23 +126,22 @@ cd ProyectoWeb
 cp .env.example .env
 ```
 
-3. **Edita el archivo `.env`** con tus valores:
+3. **Edita el archivo `.env`** con tus valores (Supabase):
 
 ```env
-# PostgreSQL
-POSTGRES_USER=tu_usuario
-POSTGRES_PASSWORD=tu_contraseña_segura
-POSTGRES_DB=vigilapp_db
-POSTGRES_PORT=5432
+# Supabase (JDBC recomendado)
+SPRING_DATASOURCE_URL=jdbc:postgresql://aws-0-us-west-2.pooler.supabase.com:6543/postgres?sslmode=require
+SUPABASE_DB_USER=postgres.xxxxx
+SUPABASE_DB_PASSWORD=tu_password
+SUPABASE_DB_HOST=aws-0-us-west-2.pooler.supabase.com
+SUPABASE_DB_PORT=6543
+SUPABASE_DB_NAME=postgres
 
-# pgAdmin
-PGADMIN_EMAIL=admin@ejemplo.com
-PGADMIN_PASSWORD=admin123
-PGADMIN_PORT=5050
+# URL opcional para importar init.sql con psql
+SUPABASE_DB_URL=postgres://postgres.xxxxx:tu_password@aws-0-us-west-2.pooler.supabase.com:6543/postgres
 
 # Spring Boot
 SPRING_PORT=8080
-SPRING_PROFILES_ACTIVE=dev
 
 # Frontend (Angular SSR)
 FRONTEND_PORT=4000
@@ -166,47 +163,25 @@ docker compose up --build
 docker compose up --build -d
 ```
 
-### Usar Supabase como base de datos
+### Inicializar datos en Supabase (opcional)
 
-Si prefieres usar Supabase en lugar del Postgres local, sigue estos pasos:
-
-1. Crea un proyecto en Supabase y copia la cadena de conexión (JDBC o postgres URL).
-
-2. Exporta las variables de entorno (recomendado usar un archivo `.env`):
-
-```env
-# Supabase DB (JDBC preferred)
-SPRING_DATASOURCE_URL=jdbc:postgresql://db.<your>.supabase.co:5432/vigilapp_db?sslmode=require
-# Alternatively (psql style)
-SUPABASE_DB_URL=postgres://user:pass@db.<your>.supabase.co:5432/vigilapp_db
-SUPABASE_DB_USER=user
-SUPABASE_DB_PASSWORD=pass
-SUPABASE_DB_HOST=db.<your>.supabase.co
-SUPABASE_DB_PORT=5432
-SUPABASE_DB_NAME=vigilapp_db
-
-# Spring/Frontend ports
-SPRING_PORT=8080
-FRONTEND_PORT=4000
-```
-
-3. Importa el esquema y datos iniciales (`init.sql`) usando el helper incluido:
+Si quieres cargar el esquema y datos iniciales (`init.sql`), usa el helper incluido:
 
 ```bash
 SUPABASE_DB_URL="postgres://user:pass@db.<your>.supabase.co:5432/vigilapp_db" \
 	./scripts/import_to_supabase.sh
 ```
 
-4. Levanta los servicios usando el archivo de composición para Supabase:
+Luego levanta los servicios:
 
 ```bash
-docker compose -f compose.yml -f compose.supabase.yml up --build -d
+docker compose up --build -d
 ```
 
 Notas:
 - `SPRING_DATASOURCE_URL` acepta una URL JDBC completa (recomendada para forzar `sslmode=require`).
 - Si usas `SUPABASE_DB_URL` (psql-style), el script `scripts/import_to_supabase.sh` la usará para importar `init.sql`.
-- Mantener el backend como API propia es lo más sencillo: Supabase solo reemplaza la capa de datos.
+- En Docker se levantan solo backend y frontend; la base vive en Supabase.
 
 Seguridad y secretos:
 - No guardes credenciales en archivos comiteados. He eliminado `/.env` del repositorio.
@@ -241,8 +216,6 @@ Una vez levantados los contenedores, puedes acceder a:
 |----------|-----|-------------|
 | Frontend | `http://localhost:${FRONTEND_PORT}` | Aplicación Angular SSR |
 | Backend API | `http://localhost:${SPRING_PORT}` | API REST de Spring Boot |
-| pgAdmin | `http://localhost:${PGADMIN_PORT}` | Administrador visual de PostgreSQL |
-| PostgreSQL | `localhost:${POSTGRES_PORT}` | Base de datos (acceso directo) |
 
 > Los puertos dependen de los valores definidos en tu archivo `.env`.
 
