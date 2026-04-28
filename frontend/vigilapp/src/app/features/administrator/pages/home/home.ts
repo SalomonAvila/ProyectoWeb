@@ -5,6 +5,7 @@ import { Observable, combineLatest, map, of, catchError, startWith, switchMap } 
 
 import { AdminService, Zone, Teacher, Shift } from '../../services/admin.service';
 import { UsuarioService } from '../../../../core/services/usuario.service';
+import { Auth } from '../../../../core/services/auth';
 import { StatCard } from '../../../../shared/ui/stat-card/stat-card';
 import { ModuleCard } from '../../../../shared/ui/module-card/module-card';
 import { Modal } from '../../../../shared/ui/modal/modal';
@@ -39,6 +40,7 @@ export class Home {
 
   private adminService   = inject(AdminService);
   private usuarioService = inject(UsuarioService);
+  private auth           = inject(Auth);
   private router         = inject(Router);
 
   usuario$: Observable<any> = this.usuarioService.getUsuarioActual().pipe(
@@ -119,7 +121,7 @@ export class Home {
   }
 
   cerrarSesion(): void {
-    this.usuarioService.logout?.();
+    this.auth.logout();
     this.router.navigate(['/']);
   }
 }
