@@ -166,6 +166,53 @@ docker compose up --build
 docker compose up --build -d
 ```
 
+### Usar Supabase como base de datos
+
+Si prefieres usar Supabase en lugar del Postgres local, sigue estos pasos:
+
+1. Crea un proyecto en Supabase y copia la cadena de conexión (JDBC o postgres URL).
+
+2. Exporta las variables de entorno (recomendado usar un archivo `.env`):
+
+```env
+# Supabase DB (JDBC preferred)
+SPRING_DATASOURCE_URL=jdbc:postgresql://db.<your>.supabase.co:5432/vigilapp_db?sslmode=require
+# Alternatively (psql style)
+SUPABASE_DB_URL=postgres://user:pass@db.<your>.supabase.co:5432/vigilapp_db
+SUPABASE_DB_USER=user
+SUPABASE_DB_PASSWORD=pass
+SUPABASE_DB_HOST=db.<your>.supabase.co
+SUPABASE_DB_PORT=5432
+SUPABASE_DB_NAME=vigilapp_db
+
+# Spring/Frontend ports
+SPRING_PORT=8080
+FRONTEND_PORT=4000
+```
+
+3. Importa el esquema y datos iniciales (`init.sql`) usando el helper incluido:
+
+```bash
+SUPABASE_DB_URL="postgres://user:pass@db.<your>.supabase.co:5432/vigilapp_db" \
+	./scripts/import_to_supabase.sh
+```
+
+4. Levanta los servicios usando el archivo de composición para Supabase:
+
+```bash
+docker compose -f compose.yml -f compose.supabase.yml up --build -d
+```
+
+Notas:
+- `SPRING_DATASOURCE_URL` acepta una URL JDBC completa (recomendada para forzar `sslmode=require`).
+- Si usas `SUPABASE_DB_URL` (psql-style), el script `scripts/import_to_supabase.sh` la usará para importar `init.sql`.
+- Mantener el backend como API propia es lo más sencillo: Supabase solo reemplaza la capa de datos.
+
+Seguridad y secretos:
+- No guardes credenciales en archivos comiteados. He eliminado `/.env` del repositorio.
+- Para entornos locales usa un archivo `.env` en tu máquina (no lo subas). Para despliegues en producción, usa Docker secrets, variables de entorno en tu CI/CD o el panel de Secrets de tu proveedor.
+- Ejemplo rápido para Docker Compose con secretos: crea `./secrets/db_password.txt` (fuera del repo) y usa `secrets:` en `compose.yml`.
+
 **Reconstruir rápidamente (usando el script incluido):**
 
 ```bash
