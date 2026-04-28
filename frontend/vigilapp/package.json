@@ -10,6 +10,9 @@
     "serve:ssr:vigilapp": "node dist/vigilapp/server/server.mjs"
   },
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
   "packageManager": "npm@10.9.4",
   "dependencies": {
     "@angular/common": "^21.2.0",
