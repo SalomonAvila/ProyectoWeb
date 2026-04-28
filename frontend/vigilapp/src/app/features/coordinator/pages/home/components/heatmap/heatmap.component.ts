@@ -131,9 +131,10 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    const leaflet = await import('leaflet');
+    const leafletModule = await import('leaflet');
+    const L = leafletModule.default;
 
-    this.map = leaflet.map(this.mapContainer.nativeElement, {
+    this.map = L.map(this.mapContainer.nativeElement, {
       center: this.center,
       zoom: this.initialZoom,
       minZoom: this.initialZoom,
@@ -142,7 +143,7 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
     });
 
     // Esri World Imagery - Vista satelital muy detallada
-    leaflet.tileLayer(
+    L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
         attribution: 'Tiles &copy; Esri',
@@ -156,7 +157,7 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
       const color = this.getColorForIntensidad(zona.intensidad);
       console.log(`Zona: ${zona.nombre}, Intensidad: ${zona.intensidad}, Color: ${color}`);
       
-      const polygon = leaflet.polygon(zona.puntos, {
+      const polygon = L.polygon(zona.puntos, {
         color: color,
         weight: 2,
         opacity: 0.9,

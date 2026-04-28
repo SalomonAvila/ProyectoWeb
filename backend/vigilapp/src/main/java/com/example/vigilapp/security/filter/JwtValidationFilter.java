@@ -6,7 +6,6 @@ import static com.example.vigilapp.security.TokenJwtConfig.PREFIX_TOKEN;
 import static com.example.vigilapp.security.TokenJwtConfig.SECRET_KEY;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +13,6 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -62,19 +59,9 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
             // Username (claim estándar)
             String username = claims.getSubject();
 
-            List<?> authoritiesRaw = (List<?>) claims.get("authorities");
-
-            List<String> authoritiesList = authoritiesRaw.stream()
-            .map(Object::toString)
-            .toList();
-
-            Collection<? extends GrantedAuthority> authorities = authoritiesList.stream()
-                    .map(SimpleGrantedAuthority::new)
-                    .toList();
-
             // Crear autenticación
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(username, null, authorities);
+                UsernamePasswordAuthenticationToken authenticationToken =
+                    UsernamePasswordAuthenticationToken.authenticated(username, null, List.of());
 
             // Guardar en contexto de seguridad
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);

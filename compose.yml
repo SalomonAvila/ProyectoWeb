@@ -62,6 +62,8 @@ services:
     restart: always
     ports:
       - "${FRONTEND_PORT:-4000}:4000"
+    environment:
+      - BACKEND_HOST=vigilapp-backend
     networks:
       - mi-red
     depends_on:
