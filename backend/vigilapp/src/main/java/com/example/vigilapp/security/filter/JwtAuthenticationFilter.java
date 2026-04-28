@@ -1,22 +1,19 @@
 package com.example.vigilapp.security.filter;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.vigilapp.entities.Usuario;
+import com.example.vigilapp.repositories.UsuarioRepository;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,16 +23,19 @@ import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.databind.DatabindException;
 import tools.jackson.databind.ObjectMapper;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import static com.example.vigilapp.security.TokenJwtConfig.*;
 
 
-//CLASE PARA CREAR EL TOKEN Y DEVOLVERLO AL CLIENTE
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final UsuarioRepository usuarioRepository;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, UsuarioRepository usuarioRepository) {
         this.authenticationManager = authenticationManager;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
@@ -68,29 +68,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
             FilterChain chain, Authentication authResult) throws IOException, ServletException {
 
-        org.springframework.security.core.userdetails.User user =
-                (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
-
-        String username = user.getUsername();
-
-        Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
-
-        
-
-        //convertir roles a String
-        List<String> authorities = roles.stream()
-        .map(GrantedAuthority::getAuthority)
-        .filter(auth -> auth.startsWith("ROLE_"))
-        .toList();
-
-        Claims claims = Jwts.claims()
-        .add("authorities",authorities )
-        .add("username",username)
-        .build();
+        String username = authResult.getName();
+        Usuario usuario = usuarioRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + username));
+        String role = usuario.getRol().getNombre();
 
         String token = Jwts.builder()
                 .subject(username)
-                .claims(claims)
+                .claim("role", role)
                 .expiration(new Date(System.currentTimeMillis() + 3600000))
                 .issuedAt(new Date())
                 .signWith(SECRET_KEY)
@@ -101,6 +86,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Map<String, String> body = new HashMap<>();
         body.put("token", token);
         body.put("username", username);
+        body.put("role", role);
         body.put("message", String.format("Hola %s has iniciado sesión con éxito", username));
 
         response.getWriter().write(new ObjectMapper().writeValueAsString(body));

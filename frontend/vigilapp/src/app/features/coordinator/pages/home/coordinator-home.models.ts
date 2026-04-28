@@ -20,6 +20,7 @@ export type CoordinatorZone = {
   description: string;
   capacity: number;
   checkpoints: string[];
+  intensidad?: number; // 1-10: Low (1-3), Medium (4-7), High (8-9), Extreme (10)
 };
 
 export type CoordinatorShift = {

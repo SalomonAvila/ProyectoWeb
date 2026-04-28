@@ -3,7 +3,7 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "analytics": "ae44ae4d-7be6-4a9d-9d79-a9627fa1d087"
+    "analytics": "4f7e9c23-8194-417d-b301-86dfc0d86e06"
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -26,6 +26,7 @@
               }
             ],
             "styles": [
+              "node_modules/leaflet/dist/leaflet.css",
               "src/styles.css"
             ],
             "server": "src/main.server.ts",

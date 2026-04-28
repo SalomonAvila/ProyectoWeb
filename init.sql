@@ -173,19 +173,17 @@ ON CONFLICT (id_rol) DO NOTHING;
 -- Ajusta la secuencia de rol cuando se insertan ids manuales
 SELECT setval('rol_id_rol_seq', (SELECT COALESCE(MAX(id_rol), 1) FROM rol), true);
 
--- Usuarios de prueba (passwords BCrypt)
 -- admin123
 INSERT INTO usuario (nombre, email, password, estado, id_rol)
-VALUES ('Administrador', 'admin@example.com', '$2a$10$IGPrXPbajAmGvlN3PtcvYenPd2ZskOPiehog3HFvNGZFrhe/8u6bW', true, 1)
+VALUES ('Administrador', 'admin@ejemplo.com', '$2b$10$iI22Xfy4CIirRnjOGaEhuuY21S8kcEjGkaan79MOa3DPjF2HgmW7C', true, 1)
 ON CONFLICT (email) DO NOTHING;
 
--- user123
+-- coordinador123
 INSERT INTO usuario (nombre, email, password, estado, id_rol)
-VALUES ('Coordinador Prueba', 'coordinador@example.com', '$2a$10$O6GTrIetOgPZn6ZWEpwCieeUC/y5SRghfmGkexDSD/x1xYd5IR9aS
-', true, 2)
+VALUES ('Coordinador Prueba', 'coordinador@ejemplo.com', '$2b$10$6MHyhbDZ3mqtq0oUH1bZge0ymrPWvtfOIgGAH5YXgngO/CfJXPBhO', true, 2)
 ON CONFLICT (email) DO NOTHING;
 
 -- docente123
 INSERT INTO usuario (nombre, email, password, estado, id_rol)
-VALUES ('Profesor Prueba', 'docente@example.com', '$2a$10$QTxT2esfUej4sB51OdQlwePhSt0k.FFb2xtdngmYeoI3LWfkGHLu6', true, 3)
+VALUES ('Profesor Prueba', 'profesor@ejemplo.com', '$2b$10$RjB4pGlRdtXOJcqXeYBNuOJt37LsEWFxPJIosOZ9TwcbbTHya0.GK', true, 3)
 ON CONFLICT (email) DO NOTHING;

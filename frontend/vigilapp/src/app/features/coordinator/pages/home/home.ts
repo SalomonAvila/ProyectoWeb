@@ -6,11 +6,11 @@ import { CoordinatorActiveShifts } from './components/coordinator-active-shifts/
 import { CoordinatorActivityFeed } from './components/coordinator-activity-feed/coordinator-activity-feed';
 import { CoordinatorAlerts } from './components/coordinator-alerts/coordinator-alerts';
 import { CoordinatorHeader } from './components/coordinator-header/coordinator-header';
+import { HeatmapComponent } from './components/heatmap/heatmap.component';
 import { CoordinatorReassignDialog } from './components/coordinator-reassign-dialog/coordinator-reassign-dialog';
 import { CoordinatorShiftDetailsDialog } from './components/coordinator-shift-details-dialog/coordinator-shift-details-dialog';
 import { CoordinatorStats } from './components/coordinator-stats/coordinator-stats';
 import { CoordinatorZoneDetailsDialog } from './components/coordinator-zone-details-dialog/coordinator-zone-details-dialog';
-import { CoordinatorZoneMap } from './components/coordinator-zone-map/coordinator-zone-map';
 import {
   COORDINATOR_DAY,
   MOCK_INCIDENTS,
@@ -34,7 +34,7 @@ import {
     CoordinatorHeader,
     CoordinatorStats,
     CoordinatorAlerts,
-    CoordinatorZoneMap,
+    HeatmapComponent,
     CoordinatorActiveShifts,
     CoordinatorActivityFeed,
     CoordinatorShiftDetailsDialog,

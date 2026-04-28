@@ -1,4 +1,4 @@
-<div class="min-h-screen relative bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-900">
+<div class="min-h-screen relative bg-linear-to-br from-slate-50 via-white to-slate-100 text-slate-900">
 	<app-coordinator-header
 		[autoRefresh]="autoRefresh"
 		(back)="onBack()"
@@ -20,13 +20,7 @@
 			(reassign)="openReassignDialog($event)"
 		/>
 
-		<app-coordinator-zone-map
-			[zones]="mockZones"
-			[activeShifts]="activeShifts"
-			[missedShifts]="missedShifts"
-			[incidents]="todayIncidents"
-			(zoneSelected)="viewZoneDetails($event.id)"
-		/>
+		<app-heatmap />
 
 		<app-coordinator-active-shifts
 			*ngIf="activeShifts.length > 0"

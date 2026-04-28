@@ -2,15 +2,14 @@ package com.example.vigilapp.security;
 
 import java.util.Arrays;
 
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,17 +19,20 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.example.vigilapp.repositories.UsuarioRepository;
 import com.example.vigilapp.security.filter.JwtAuthenticationFilter;
 import com.example.vigilapp.security.filter.JwtValidationFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig {
 
 
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Bean
     AuthenticationManager authenticationManager()
@@ -47,14 +49,14 @@ public class SpringSecurityConfig {
     
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http){
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager());
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager(), usuarioRepository);
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 
-        return http.authorizeHttpRequests((auth)-> auth
-        .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
-        .requestMatchers(HttpMethod.POST,"/api/usuarios").permitAll()
-        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-        .anyRequest().authenticated())
+        return http.authorizeHttpRequests(auth -> auth
+        .requestMatchers("/auth/login/**").permitAll()  // Cubre GET, POST, PUT, DELETE, OPTIONS, etc.
+        .anyRequest().authenticated()
+)
+
         .addFilter(jwtAuthenticationFilter)
         .addFilter(new JwtValidationFilter(authenticationManager()))
         .csrf(config ->config.disable())

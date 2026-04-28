@@ -15,8 +15,12 @@
 					<div class="flex items-start justify-between gap-4">
 						<div>
 							<p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Zona seleccionada</p>
-							<h4 class="mt-2 text-xl font-semibold text-slate-900">{{ zone.name }}</h4>
+							<div class="mt-2 flex items-center gap-3">
+								<h4 class="text-xl font-semibold text-slate-900">{{ zone.name }}</h4>
+								<div class="h-8 w-8 rounded-full border-2 border-white shadow-sm" [style.backgroundColor]="getColorForIntensidad(zone.intensidad)" [title]="getIntensidadLabel(zone.intensidad) + ' (intensidad ' + (zone.intensidad || '?') + ')'"></div>
+							</div>
 							<p class="mt-1 text-sm text-slate-600">Capacidad: {{ zone.capacity }} estudiantes</p>
+							<p *ngIf="zone.intensidad" class="mt-1 text-xs text-slate-600">Nivel de riesgo: <span class="font-semibold">{{ getIntensidadLabel(zone.intensidad) }}</span> ({{ zone.intensidad }}/10)</p>
 						</div>
 						<div class="rounded-2xl border border-sky-100 bg-white px-4 py-3 text-right">
 							<div class="text-xs uppercase tracking-[0.25em] text-slate-500">Docente</div>

@@ -8,7 +8,14 @@ import { Mail } from '../../../../shared/ui/input/mail/mail';
 import { Password } from '../../../../shared/ui/input/password/password';
 import { RememberMe } from './components/remember-me/remember-me';
 import { Auth } from '../../../../core/services/auth';
-import { UsuarioLogin } from '../../../../core/models/user/user-login';
+import { LoginResponse } from '../../../../core/models/user/login-response';
+
+const ROUTES_BY_ROLE: Record<string, string> = {
+  'coordinador': '/coordinator/home',
+  'profesor': '/profesor/home',
+  'administrador': '/coordinator/home',
+  'admin': '/coordinator/home',
+};
 
 @Component({
   selector: 'login',
@@ -39,15 +46,17 @@ export class LoginPage {
 
     this.isLoading = true;
 
-    this.auth.login(this.email.trim(), this.password).subscribe({
-      next: (usuario: UsuarioLogin) => {
-        this.isLoading = false;
+     this.auth.login(this.email.trim(), this.password).subscribe({
+       next: (response: LoginResponse) => {
+         this.isLoading = false;
+         console.log('Login response:', response);
 
-        const storage = this.rememberMe ? localStorage : sessionStorage;
-        storage.setItem('auth_user', JSON.stringify(usuario));
+         this.auth.setUser(response, this.rememberMe);
 
-        this.router.navigateByUrl('/');
-      },
+         const route = ROUTES_BY_ROLE[response.role.toLowerCase()] || '/profesor/dashboard';
+         console.log('Navigating to:', route);
+         this.router.navigateByUrl(route);
+       },
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err?.error?.message || 'Credenciales inválidas';

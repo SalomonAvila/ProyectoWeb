@@ -1,0 +1,271 @@
+<div class="min-h-screen"
+     style="background: radial-gradient(ellipse at 20% 20%, rgba(199,210,254,0.55) 0%, transparent 55%), radial-gradient(ellipse at 80% 10%, rgba(186,230,253,0.45) 0%, transparent 50%), radial-gradient(ellipse at 60% 80%, rgba(243,232,255,0.45) 0%, transparent 55%), #f8faff">
+
+  <app-page-header title="Configuración"
+                   subtitle="Parámetros del sistema"
+                   [showBack]="true">
+    <button *ngIf="hasChanges"
+            type="button"
+            (click)="reset()"
+            class="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-all text-sm cursor-pointer border-none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="1 4 1 10 7 10"/>
+        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+      </svg>
+      <span class="hidden sm:inline">Restablecer</span>
+    </button>
+    <button type="button"
+            (click)="save()"
+            [disabled]="!hasChanges"
+            class="flex items-center gap-2 px-4 py-2 rounded-full transition-all text-sm font-semibold cursor-pointer border-none"
+            [class.bg-gradient-to-r]="hasChanges"
+            [class.from-blue-500]="hasChanges"
+            [class.to-blue-600]="hasChanges"
+            [class.text-white]="hasChanges"
+            [class.shadow-lg]="hasChanges"
+            [class.shadow-blue-500/30]="hasChanges"
+            [class.bg-gray-100]="!hasChanges"
+            [class.text-gray-400]="!hasChanges"
+            [class.cursor-not-allowed]="!hasChanges">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+        <polyline points="17 21 17 13 7 13 7 21"/>
+        <polyline points="7 3 7 8 15 8"/>
+      </svg>
+      <span>Guardar</span>
+    </button>
+  </app-page-header>
+
+  <div *ngIf="config" class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8 sm:space-y-10">
+
+    <!-- TURNOS -->
+    <section>
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+               fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-base font-semibold text-gray-900 m-0">Turnos</h2>
+          <p class="text-xs text-gray-500 m-0">Parámetros de los turnos de vigilancia</p>
+        </div>
+      </div>
+      <div class="bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl sm:rounded-3xl divide-y divide-gray-100 shadow-sm">
+        <div class="p-5 sm:p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 m-0">Duración del turno</h3>
+              <p class="text-xs text-gray-500 mt-0.5 m-0">Tiempo estándar por turno</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <input type="range"
+                     min="15" max="60" step="5"
+                     [ngModel]="config.shiftDuration"
+                     (ngModelChange)="onNumberChange('shiftDuration', $event)"
+                     name="shiftDuration"
+                     class="w-40 accent-blue-500">
+              <span class="text-sm font-semibold text-gray-900 w-16 text-right">{{ config.shiftDuration }} min</span>
+            </div>
+          </div>
+        </div>
+        <div class="p-5 sm:p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 m-0">Recorridos mínimos</h3>
+              <p class="text-xs text-gray-500 mt-0.5 m-0">Mínimo de recorridos por turno</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <button type="button"
+                      (click)="adjust('minPatrols', -1, 1, 10, 1)"
+                      class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-base font-medium transition-colors border-none cursor-pointer">−</button>
+              <span class="text-lg font-semibold text-gray-900 w-8 text-center">{{ config.minPatrols }}</span>
+              <button type="button"
+                      (click)="adjust('minPatrols', 1, 1, 10, 1)"
+                      class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-base font-medium transition-colors border-none cursor-pointer">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTIFICACIONES -->
+    <section>
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+               fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-base font-semibold text-gray-900 m-0">Notificaciones</h2>
+          <p class="text-xs text-gray-500 m-0">Alertas y avisos automáticos</p>
+        </div>
+      </div>
+      <div class="bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl sm:rounded-3xl divide-y divide-gray-100 shadow-sm">
+        <div class="p-5 sm:p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 m-0">Aviso anticipado</h3>
+              <p class="text-xs text-gray-500 mt-0.5 m-0">Minutos antes del turno para notificar</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <input type="range"
+                     min="5" max="30" step="5"
+                     [ngModel]="config.notificationMinutes"
+                     (ngModelChange)="onNumberChange('notificationMinutes', $event)"
+                     name="notificationMinutes"
+                     class="w-40 accent-orange-500">
+              <span class="text-sm font-semibold text-gray-900 w-16 text-right">{{ config.notificationMinutes }} min</span>
+            </div>
+          </div>
+        </div>
+        <div class="p-5 sm:p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 m-0">Auto-reasignación</h3>
+              <p class="text-xs text-gray-500 mt-0.5 m-0">Minutos sin check-in para alertar reasignación</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <input type="range"
+                     min="5" max="20" step="1"
+                     [ngModel]="config.autoReassignMinutes"
+                     (ngModelChange)="onNumberChange('autoReassignMinutes', $event)"
+                     name="autoReassignMinutes"
+                     class="w-40 accent-orange-500">
+              <span class="text-sm font-semibold text-gray-900 w-16 text-right">{{ config.autoReassignMinutes }} min</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAMIFICACIÓN -->
+    <section>
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+               fill="none" stroke="#9333ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="8 21 12 17 16 21"/><line x1="12" y1="17" x2="12" y2="11"/>
+            <path d="M5 4H19"/><path d="M5 4v5a7 7 0 0 0 14 0V4"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-base font-semibold text-gray-900 m-0">Gamificación</h2>
+          <p class="text-xs text-gray-500 m-0">Sistema de puntos e incentivos</p>
+        </div>
+      </div>
+      <div class="bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl sm:rounded-3xl divide-y divide-gray-100 shadow-sm">
+        <div class="p-5 sm:p-6">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 m-0">Habilitar gamificación</h3>
+              <p class="text-xs text-gray-500 mt-0.5 m-0">Puntos, rankings e insignias</p>
+            </div>
+            <button type="button"
+                    (click)="toggleGamification()"
+                    class="relative w-14 h-8 rounded-full transition-colors cursor-pointer border-none"
+                    [class.bg-purple-500]="config.gamificationEnabled"
+                    [class.bg-gray-300]="!config.gamificationEnabled">
+              <div class="absolute top-1 w-6 h-6 rounded-full bg-white shadow transition-transform"
+                   [class.translate-x-7]="config.gamificationEnabled"
+                   [class.translate-x-1]="!config.gamificationEnabled"></div>
+            </button>
+          </div>
+        </div>
+
+        <ng-container *ngIf="config.gamificationEnabled">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 class="text-sm font-semibold text-gray-900 m-0">Puntos por turno completado</h3>
+                <p class="text-xs text-gray-500 mt-0.5 m-0">Base de puntos al finalizar un turno</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <button type="button" (click)="adjust('pointsPerShift', -1, 10, 500, 10)"
+                        class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-base font-medium border-none cursor-pointer">−</button>
+                <span class="text-lg font-semibold text-purple-600 w-12 text-center">{{ config.pointsPerShift }}</span>
+                <button type="button" (click)="adjust('pointsPerShift', 1, 10, 500, 10)"
+                        class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-base font-medium border-none cursor-pointer">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 class="text-sm font-semibold text-gray-900 m-0">Puntos por recorrido</h3>
+                <p class="text-xs text-gray-500 mt-0.5 m-0">Puntos por cada ronda de vigilancia</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <button type="button" (click)="adjust('pointsPerPatrol', -1, 5, 200, 5)"
+                        class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-base font-medium border-none cursor-pointer">−</button>
+                <span class="text-lg font-semibold text-purple-600 w-12 text-center">{{ config.pointsPerPatrol }}</span>
+                <button type="button" (click)="adjust('pointsPerPatrol', 1, 5, 200, 5)"
+                        class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-base font-medium border-none cursor-pointer">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 class="text-sm font-semibold text-gray-900 m-0">Puntos por reporte</h3>
+                <p class="text-xs text-gray-500 mt-0.5 m-0">Puntos por incidente reportado</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <button type="button" (click)="adjust('pointsPerReport', -1, 10, 200, 10)"
+                        class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-base font-medium border-none cursor-pointer">−</button>
+                <span class="text-lg font-semibold text-purple-600 w-12 text-center">{{ config.pointsPerReport }}</span>
+                <button type="button" (click)="adjust('pointsPerReport', 1, 10, 200, 10)"
+                        class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-base font-medium border-none cursor-pointer">+</button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </section>
+
+    <!-- SEGURIDAD -->
+    <section>
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+               fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-base font-semibold text-gray-900 m-0">Seguridad</h2>
+          <p class="text-xs text-gray-500 m-0">Verificación y control de acceso</p>
+        </div>
+      </div>
+      <div class="bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl sm:rounded-3xl divide-y divide-gray-100 shadow-sm">
+        <div class="p-5 sm:p-6 flex items-center justify-between gap-3">
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 m-0">Verificación QR obligatoria</h3>
+            <p class="text-xs text-gray-500 mt-0.5 m-0">Requiere escaneo QR para check-in</p>
+          </div>
+          <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Activo</span>
+        </div>
+        <div class="p-5 sm:p-6 flex items-center justify-between gap-3">
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 m-0">PIN alternativo</h3>
+            <p class="text-xs text-gray-500 mt-0.5 m-0">Permitir check-in con código PIN</p>
+          </div>
+          <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Activo</span>
+        </div>
+        <div class="p-5 sm:p-6 flex items-center justify-between gap-3">
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 m-0">Geolocalización</h3>
+            <p class="text-xs text-gray-500 mt-0.5 m-0">Verificar ubicación del docente</p>
+          </div>
+          <span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-full text-xs font-semibold">Desactivado</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

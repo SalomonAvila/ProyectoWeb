@@ -2,7 +2,6 @@ package com.example.vigilapp.security;
 
 import com.example.vigilapp.entities.Usuario;
 import com.example.vigilapp.repositories.UsuarioRepository;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,14 +24,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
 
-        String roleName = usuario.getRol().getNombre();
-        String authority = roleName.startsWith("ROLE_") ? roleName : "ROLE_" + roleName;
-
-        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(authority));
-
         return User.withUsername(usuario.getEmail())
                 .password(usuario.getPassword())
-                .authorities(authorities)
+            .authorities(List.of())
                 .disabled(!Boolean.TRUE.equals(usuario.getEstado()))
                 .build();
     }
