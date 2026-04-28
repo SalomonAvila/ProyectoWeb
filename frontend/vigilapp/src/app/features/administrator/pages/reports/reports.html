@@ -1,0 +1,302 @@
+<div class="min-h-screen"
+     style="background: radial-gradient(ellipse at 20% 20%, rgba(199,210,254,0.55) 0%, transparent 55%), radial-gradient(ellipse at 80% 10%, rgba(186,230,253,0.45) 0%, transparent 50%), radial-gradient(ellipse at 60% 80%, rgba(243,232,255,0.45) 0%, transparent 55%), #f8faff">
+
+  <app-page-header title="Reportes y Auditoría"
+                   subtitle="Historial completo del sistema"
+                   [showBack]="true">
+    <button type="button"
+            (click)="showExport = true"
+            class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full transition-all text-sm font-semibold shadow-lg shadow-blue-500/30 cursor-pointer border-none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      <span>Exportar</span>
+    </button>
+  </app-page-header>
+
+  <ng-container *ngIf="vm$ | async as vm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8">
+
+      <!-- SUMMARY CARDS -->
+      <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <app-stat-card label="Turnos Totales"     [value]="vm.totalShifts"    [subtext]="vm.completedShifts + ' completados'" icon="calendar" color="blue"></app-stat-card>
+        <app-stat-card label="Incidentes"         [value]="vm.totalIncidents" [subtext]="vm.resolvedIncidents + ' resueltos'" icon="alert"    color="orange"></app-stat-card>
+        <app-stat-card label="Eventos Registrados" [value]="vm.totalLogs"     subtext="Historial del sistema"                 icon="file"     color="green"></app-stat-card>
+        <app-stat-card label="Docentes Activos"   [value]="vm.activeTeachers" subtext="Con datos de rendimiento"              icon="users"    color="purple"></app-stat-card>
+      </section>
+
+      <!-- TABS -->
+      <section>
+        <div class="flex gap-2 overflow-x-auto pb-1">
+          <button type="button"
+                  (click)="setTab('audit')"
+                  [class.bg-gray-900]="activeTab === 'audit'"
+                  [class.text-white]="activeTab === 'audit'"
+                  [class.bg-white]="activeTab !== 'audit'"
+                  [class.text-gray-700]="activeTab !== 'audit'"
+                  class="flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap border border-gray-200 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            Log de Auditoría
+          </button>
+          <button type="button"
+                  (click)="setTab('incidents')"
+                  [class.bg-gray-900]="activeTab === 'incidents'"
+                  [class.text-white]="activeTab === 'incidents'"
+                  [class.bg-white]="activeTab !== 'incidents'"
+                  [class.text-gray-700]="activeTab !== 'incidents'"
+                  class="flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap border border-gray-200 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            Incidentes
+          </button>
+          <button type="button"
+                  (click)="setTab('performance')"
+                  [class.bg-gray-900]="activeTab === 'performance'"
+                  [class.text-white]="activeTab === 'performance'"
+                  [class.bg-white]="activeTab !== 'performance'"
+                  [class.text-gray-700]="activeTab !== 'performance'"
+                  class="flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap border border-gray-200 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Rendimiento
+          </button>
+        </div>
+      </section>
+
+      <!-- AUDIT TAB -->
+      <section *ngIf="activeTab === 'audit'" class="space-y-4">
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <svg class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text"
+                   [(ngModel)]="searchQuery"
+                   placeholder="Buscar en logs..."
+                   class="w-full pl-11 pr-4 py-3 bg-white/80 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+          </div>
+          <select [(ngModel)]="filterRole"
+                  class="w-full sm:w-56 px-4 py-3 bg-white/80 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            <option value="all">Todos los roles</option>
+            <option value="docente">Docente</option>
+            <option value="coordinador">Coordinador</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <app-glass-card *ngIf="vm.filteredLogs.length === 0; else logList">
+          <div class="text-center">
+            <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-green-50 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            <h3 class="text-base font-semibold text-gray-700 mb-1">
+              <ng-container *ngIf="vm.auditLogs.length === 0">Aún no hay eventos registrados</ng-container>
+              <ng-container *ngIf="vm.auditLogs.length > 0">Sin coincidencias</ng-container>
+            </h3>
+            <p class="text-sm text-gray-400">
+              <ng-container *ngIf="vm.auditLogs.length === 0">Los eventos del sistema aparecerán aquí.</ng-container>
+              <ng-container *ngIf="vm.auditLogs.length > 0">Ajusta la búsqueda o el filtro de rol.</ng-container>
+            </p>
+          </div>
+        </app-glass-card>
+
+        <ng-template #logList>
+        <div class="bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl sm:rounded-3xl divide-y divide-gray-100 overflow-hidden shadow-sm">
+          <div *ngFor="let log of vm.filteredLogs"
+               class="p-4 sm:p-5 hover:bg-gray-50 transition-colors">
+            <div class="flex items-start gap-3 sm:gap-4">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 {{ actionIconColor(log.action) }}">
+                <svg *ngIf="actionIcon(log.action) === 'calendar'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <svg *ngIf="actionIcon(log.action) === 'alert'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <svg *ngIf="actionIcon(log.action) === 'file'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                <svg *ngIf="actionIcon(log.action) === 'clock'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4 mb-1">
+                  <h3 class="font-semibold text-gray-900 text-sm m-0">{{ log.action }}</h3>
+                  <span class="text-xs text-gray-500 flex-shrink-0">{{ formatDate(log.timestamp) }}</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-1 m-0">{{ log.details }}</p>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">{{ log.role }}</span>
+                  <span class="text-xs text-gray-500">{{ log.user }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </ng-template>
+      </section>
+
+      <!-- INCIDENTS TAB -->
+      <section *ngIf="activeTab === 'incidents'" class="space-y-4">
+        <app-glass-card *ngIf="vm.incidents.length === 0; else incidentList">
+          <div class="text-center">
+            <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-orange-50 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <h3 class="text-base font-semibold text-gray-700 mb-1">Sin incidentes reportados</h3>
+            <p class="text-sm text-gray-400">Cuando un docente reporte un incidente, aparecerá aquí.</p>
+          </div>
+        </app-glass-card>
+
+        <ng-template #incidentList>
+        <div class="bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl sm:rounded-3xl divide-y divide-gray-100 overflow-hidden shadow-sm">
+          <div *ngFor="let incident of vm.incidents"
+               class="p-4 sm:p-5 hover:bg-gray-50 transition-colors">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold {{ severityClass(incident.severity) }}">
+                  {{ incident.severity }}
+                </span>
+                <span class="text-xs text-gray-600 px-2 py-0.5 bg-gray-100 rounded-full">{{ typeLabel(incident.type) }}</span>
+                <span *ngIf="incident.resolved"
+                      class="text-xs text-green-700 px-2 py-0.5 bg-green-100 rounded-full font-semibold">Resuelto</span>
+              </div>
+              <span class="text-xs text-gray-500 flex-shrink-0">{{ formatDate(incident.timestamp) }}</span>
+            </div>
+            <p class="text-sm text-gray-900 mb-2 m-0">{{ incident.description }}</p>
+            <div class="flex items-center gap-4 text-xs text-gray-600">
+              <span>{{ incident.zoneName }}</span>
+              <span>Reportó: {{ incident.teacherName }}</span>
+            </div>
+          </div>
+        </div>
+        </ng-template>
+      </section>
+
+      <!-- PERFORMANCE TAB -->
+      <section *ngIf="activeTab === 'performance'" class="space-y-4">
+        <app-glass-card *ngIf="vm.leaderboard.length === 0; else performanceTable">
+          <div class="text-center">
+            <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-purple-50 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" stroke="#9333ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="8 21 12 17 16 21"/><line x1="12" y1="17" x2="12" y2="11"/>
+                <path d="M5 4H19"/><path d="M5 4v5a7 7 0 0 0 14 0V4"/>
+              </svg>
+            </div>
+            <h3 class="text-base font-semibold text-gray-700 mb-1">Aún no hay datos de rendimiento</h3>
+            <p class="text-sm text-gray-400">La clasificación de docentes aparecerá al acumular actividad.</p>
+          </div>
+        </app-glass-card>
+
+        <ng-template #performanceTable>
+        <div class="bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50/60 border-b border-gray-100">
+                <tr>
+                  <th class="px-4 sm:px-6 py-3 text-left text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">#</th>
+                  <th class="px-4 sm:px-6 py-3 text-left text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Docente</th>
+                  <th class="px-4 sm:px-6 py-3 text-center text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Puntos</th>
+                  <th class="px-4 sm:px-6 py-3 text-center text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Turnos</th>
+                  <th class="px-4 sm:px-6 py-3 text-center text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Puntualidad</th>
+                  <th class="px-4 sm:px-6 py-3 text-center text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Recorridos</th>
+                  <th class="px-4 sm:px-6 py-3 text-center text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Reportes</th>
+                  <th class="px-4 sm:px-6 py-3 text-center text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Insignias</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr *ngFor="let entry of vm.leaderboard; let i = index" class="hover:bg-gray-50/60 transition-colors">
+                  <td class="px-4 sm:px-6 py-3 text-sm">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs {{ rankClass(i) }}">
+                      {{ i + 1 }}
+                    </div>
+                  </td>
+                  <td class="px-4 sm:px-6 py-3">
+                    <div class="text-sm font-semibold text-gray-900 whitespace-nowrap">{{ entry.teacherName }}</div>
+                    <div class="text-xs text-gray-500">{{ entry.department }}</div>
+                  </td>
+                  <td class="px-4 sm:px-6 py-3 text-center text-sm font-bold text-purple-600">{{ entry.points }}</td>
+                  <td class="px-4 sm:px-6 py-3 text-sm text-gray-600 text-center">{{ entry.shiftsCompleted }}</td>
+                  <td class="px-4 sm:px-6 py-3 text-center">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ punctualityClass(entry.punctualityRate) }}">
+                      {{ entry.punctualityRate }}%
+                    </span>
+                  </td>
+                  <td class="px-4 sm:px-6 py-3 text-sm text-gray-600 text-center">{{ entry.patrolsTotal }}</td>
+                  <td class="px-4 sm:px-6 py-3 text-sm text-gray-600 text-center">{{ entry.incidentsReported }}</td>
+                  <td class="px-4 sm:px-6 py-3 text-sm text-gray-600 text-center">{{ entry.badges }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        </ng-template>
+      </section>
+    </div>
+  </ng-container>
+
+  <!-- EXPORT MODAL -->
+  <app-modal [open]="showExport"
+             title="Exportar Reporte"
+             description="Selecciona el formato de exportación"
+             maxWidth="max-w-md"
+             (openChange)="showExport = $event">
+    <div class="space-y-3">
+      <button type="button" (click)="exportAs('pdf')"
+              class="w-full flex items-center gap-4 p-4 bg-gray-50 hover:bg-blue-50 rounded-2xl transition-all text-left border border-gray-200 hover:border-blue-300 cursor-pointer">
+        <span class="text-2xl">📄</span>
+        <div>
+          <div class="font-semibold text-gray-900 text-sm">PDF</div>
+          <div class="text-xs text-gray-600">Reporte con formato profesional</div>
+        </div>
+      </button>
+      <button type="button" (click)="exportAs('csv')"
+              class="w-full flex items-center gap-4 p-4 bg-gray-50 hover:bg-blue-50 rounded-2xl transition-all text-left border border-gray-200 hover:border-blue-300 cursor-pointer">
+        <span class="text-2xl">📊</span>
+        <div>
+          <div class="font-semibold text-gray-900 text-sm">CSV</div>
+          <div class="text-xs text-gray-600">Datos tabulados para Excel</div>
+        </div>
+      </button>
+      <button type="button" (click)="exportAs('json')"
+              class="w-full flex items-center gap-4 p-4 bg-gray-50 hover:bg-blue-50 rounded-2xl transition-all text-left border border-gray-200 hover:border-blue-300 cursor-pointer">
+        <span class="text-2xl">🔗</span>
+        <div>
+          <div class="font-semibold text-gray-900 text-sm">JSON</div>
+          <div class="text-xs text-gray-600">Datos estructurados para integración</div>
+        </div>
+      </button>
+    </div>
+  </app-modal>
+</div>

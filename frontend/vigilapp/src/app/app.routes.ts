@@ -21,5 +21,12 @@ export const routes: Routes = [
       import('./features/coordinator/coordinator.routes').then(
         m => m.COORDINATOR_ROUTES
       )
+  },
+  {
+    path: 'administrator',
+    loadChildren: () =>
+      import('./features/administrator/administrator.routes').then(
+        m => m.ADMINISTRATOR_ROUTES
+      )
   }
 ];
