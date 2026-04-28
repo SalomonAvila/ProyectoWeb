@@ -129,8 +129,7 @@ cp .env.example .env
 3. **Edita el archivo `.env`** con tus valores (Supabase):
 
 ```env
-# Supabase (JDBC recomendado)
-SPRING_DATASOURCE_URL=jdbc:postgresql://aws-0-us-west-2.pooler.supabase.com:6543/postgres?sslmode=require
+# Supabase (requerido para Docker)
 SUPABASE_DB_USER=postgres.xxxxx
 SUPABASE_DB_PASSWORD=tu_password
 SUPABASE_DB_HOST=aws-0-us-west-2.pooler.supabase.com
@@ -180,6 +179,7 @@ docker compose up --build -d
 
 Notas:
 - `SPRING_DATASOURCE_URL` acepta una URL JDBC completa (recomendada para forzar `sslmode=require`).
+- Si no defines las variables de Supabase, Docker Compose no arranca el backend: así evitamos que Spring Boot caiga en una base de datos vacía.
 - Si usas `SUPABASE_DB_URL` (psql-style), el script `scripts/import_to_supabase.sh` la usará para importar `init.sql`.
 - En Docker se levantan solo backend y frontend; la base vive en Supabase.
 
