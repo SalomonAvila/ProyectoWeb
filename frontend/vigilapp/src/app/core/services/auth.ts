@@ -11,7 +11,8 @@ const USER_KEY = 'auth_user';
 export class Auth {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
-  private api = '/auth';
+  private static readonly API_BASE = 'https://vigilapp-backend.onrender.com';
+  private api = Auth.API_BASE + '/auth';
 
   private isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);

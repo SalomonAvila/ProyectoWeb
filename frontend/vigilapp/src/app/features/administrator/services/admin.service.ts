@@ -89,7 +89,8 @@ export const DEFAULT_CONFIG: SystemConfig = {
 @Injectable({ providedIn: 'root' })
 export class AdminService {
 
-  private apiUrl = 'http://localhost:8080/api/admin';
+  private static readonly API_BASE = 'https://vigilapp-backend.onrender.com';
+  private apiUrl = AdminService.API_BASE + '/api/admin';
 
   private refreshSubject = new Subject<void>();
   readonly refresh$: Observable<void> = this.refreshSubject.asObservable();

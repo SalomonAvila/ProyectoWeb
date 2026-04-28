@@ -7,7 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class MetricasService {
 
-  private apiUrl = 'http://localhost:8080/api/metricas';
+  private static readonly API_BASE = 'https://vigilapp-backend.onrender.com';
+  private apiUrl = MetricasService.API_BASE + '/api/metricas';
 
   constructor(private http: HttpClient) {}
 

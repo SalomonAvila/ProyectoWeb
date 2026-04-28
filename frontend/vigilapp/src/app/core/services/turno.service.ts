@@ -7,7 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class TurnoService {
 
-  private apiUrl = 'http://localhost:8080/api/turnos'; 
+  private static readonly API_BASE = 'https://vigilapp-backend.onrender.com';
+  private apiUrl = TurnoService.API_BASE + '/api/turnos'; 
 
   constructor(private http: HttpClient) {}
 

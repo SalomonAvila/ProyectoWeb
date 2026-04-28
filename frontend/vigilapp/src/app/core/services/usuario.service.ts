@@ -7,7 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class UsuarioService {
 
-  private apiUrl = 'http://localhost:8080/api/usuario';
+  private static readonly API_BASE = 'https://vigilapp-backend.onrender.com';
+  private apiUrl = UsuarioService.API_BASE + '/api/usuario';
 
   constructor(private http: HttpClient) {}
 
