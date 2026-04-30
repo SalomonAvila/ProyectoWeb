@@ -62,8 +62,6 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
   private leaflet: any | null = null;
   private activeBaseLayer: any | null = null;
 
-  protected mapMode: 'satellite' | 'simple' = 'satellite';
-
   protected mapMode: ZoneMapMode = 'satellite';
 
   private readonly zonasPolygon: HeatmapZone[] = HEATMAP_POLYGONS.map(zone => ({
@@ -74,7 +72,6 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
 
   private map: import('leaflet').Map | null = null;
   private polygons: any[] = [];
-  private activeBaseLayer: any | null = null;
 
   async ngAfterViewInit(): Promise<void> {
     if (!isPlatformBrowser(this.platformId) || !this.mapContainer) {
@@ -98,8 +95,8 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
 
     // Crear polígonos de zonas de vigilancia
     this.zonasPolygon.forEach((zona) => {
-      const color = this.getColorForIntensidad(zona.intensidad);
-      console.log(`Zona: ${zona.nombre}, Numero de accidentes: ${zona.intensidad}, Color: ${color}`);
+      const color = this.getColorForAccidents(zona.accidentCount);
+      console.log(`Zona: ${zona.nombre}, Numero de accidentes: ${zona.accidentCount}, Color: ${color}`);
       
       const polygon = L.polygon(zona.puntos, {
         color,
@@ -117,18 +114,6 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
       `);
 
       this.polygons.push(polygon);
-    });
-  }
-
-  toggleBaseLayer(): void {
-    this.mapMode = this.mapMode === 'satellite' ? 'simple' : 'satellite';
-
-    if (!this.map) {
-      return;
-    }
-
-    import('leaflet').then(module => {
-      this.setBaseLayer(module.default, this.mapMode);
     });
   }
 
@@ -153,7 +138,7 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
     this.setBaseLayer(this.leaflet, this.mapMode);
   }
 
-  public addZonePolygon(zona: ZonaVigilancia): void {
+  public addZonePolygon(zona: HeatmapZone): void {
     if (this.map) {
       const leaflet = (window as any).L;
       const color = this.getColorForAccidents(zona.accidentCount);
@@ -251,29 +236,4 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
     return '#7f1d1d';
   }
 
-  private setBaseLayer(L: any, mode: 'satellite' | 'simple'): void {
-    if (!this.map) {
-      return;
-    }
-
-    if (this.activeBaseLayer) {
-      this.map.removeLayer(this.activeBaseLayer);
-      this.activeBaseLayer = null;
-    }
-
-    this.activeBaseLayer = mode === 'satellite'
-      ? L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-          attribution: 'Tiles &copy; Esri',
-          maxZoom: 20,
-          minZoom: 1,
-        })
-      : L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-          maxZoom: 20,
-          minZoom: 1,
-        });
-
-    const baseLayer = this.activeBaseLayer;
-    baseLayer.addTo(this.map);
-  }
 }
