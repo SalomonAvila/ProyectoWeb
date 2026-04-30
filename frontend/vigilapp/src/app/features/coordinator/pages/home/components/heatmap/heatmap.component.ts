@@ -26,6 +26,16 @@ type ZonaVigilancia = {
         </div>
       </div>
 
+      <div class="flex justify-start px-1">
+        <button
+          type="button"
+          class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
+          (click)="toggleBaseLayer()"
+        >
+          {{ mapMode === 'satellite' ? 'Ver mapa simple' : 'Ver satélite' }}
+        </button>
+      </div>
+
       <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm" style="position: relative; z-index: 0;">
         <div class="h-128 w-full" style="position: relative; z-index: 0;">
           <div #mapContainer class="h-full w-full" style="position: relative; z-index: auto;"></div>
@@ -44,6 +54,10 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly center: [number, number] = [4.7330, -74.0415];
   private readonly initialZoom = 19;
+  private leaflet: any | null = null;
+  private activeBaseLayer: any | null = null;
+
+  protected mapMode: 'satellite' | 'simple' = 'satellite';
 
   // Múltiples zonas de vigilancia con nombre e intensidad (1-10)
   private readonly zonasPolygon: ZonaVigilancia[] = [
@@ -133,6 +147,7 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
 
     const leafletModule = await import('leaflet');
     const L = leafletModule.default;
+    this.leaflet = leafletModule.default;
 
     this.map = L.map(this.mapContainer.nativeElement, {
       center: this.center,
@@ -142,20 +157,12 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
       preferCanvas: true,
     });
 
-    // Esri World Imagery - Vista satelital muy detallada
-    L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      {
-        attribution: 'Tiles &copy; Esri',
-        maxZoom: 20,
-        minZoom: 1,
-      }
-    ).addTo(this.map!);
+    this.setBaseLayer(L, this.mapMode);
 
     // Crear polígonos de zonas de vigilancia
     this.zonasPolygon.forEach((zona) => {
       const color = this.getColorForIntensidad(zona.intensidad);
-      console.log(`Zona: ${zona.nombre}, Intensidad: ${zona.intensidad}, Color: ${color}`);
+      console.log(`Zona: ${zona.nombre}, Numero de accidentes: ${zona.intensidad}, Color: ${color}`);
       
       const polygon = L.polygon(zona.puntos, {
         color: color,
@@ -185,10 +192,20 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
       // Limpiar todos los polígonos
       this.polygons.forEach(polygon => polygon.remove());
       this.polygons = [];
+      this.activeBaseLayer = null;
       
       this.map.remove();
       this.map = null;
     }
+  }
+
+  toggleBaseLayer(): void {
+    if (!this.map || !this.leaflet) {
+      return;
+    }
+
+    this.mapMode = this.mapMode === 'satellite' ? 'simple' : 'satellite';
+    this.setBaseLayer(this.leaflet, this.mapMode);
   }
 
   public addZonePolygon(zona: ZonaVigilancia): void {
@@ -284,5 +301,31 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
     const b = Math.round(b1 + (b2 - b1) * ratio);
 
     return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+  }
+
+  private setBaseLayer(L: any, mode: 'satellite' | 'simple'): void {
+    if (!this.map) {
+      return;
+    }
+
+    if (this.activeBaseLayer) {
+      this.map.removeLayer(this.activeBaseLayer);
+      this.activeBaseLayer = null;
+    }
+
+    this.activeBaseLayer = mode === 'satellite'
+      ? L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          attribution: 'Tiles &copy; Esri',
+          maxZoom: 20,
+          minZoom: 1,
+        })
+      : L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+          maxZoom: 20,
+          minZoom: 1,
+        });
+
+    const baseLayer = this.activeBaseLayer;
+    baseLayer.addTo(this.map);
   }
 }
