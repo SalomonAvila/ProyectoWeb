@@ -15,9 +15,39 @@ type HeatmapZone = {
 @Component({
   selector: 'app-heatmap',
   standalone: true,
-  imports: [CommonModule, HeatmapColorLegend],
-  templateUrl: './heatmap.component.html',
-  styleUrl: './heatmap.component.css',
+  template: `
+    <section class="space-y-4">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 class="px-1 text-sm font-semibold uppercase tracking-wider text-slate-500">Mapa de calor</h2>
+          <p class="px-1 text-sm text-slate-600">Zonas de vigilancia con indicadores de intensidad (1-10).</p>
+        </div>
+
+        <div class="flex items-center gap-2 px-1 text-[11px] font-medium text-slate-500">
+          <span class="rounded-full border border-green-300 bg-green-100 px-3 py-1 text-green-800">Low (1-3)</span>
+          <span class="rounded-full border border-yellow-400 bg-yellow-100 px-3 py-1 text-yellow-800">Medium (4-7)</span>
+          <span class="rounded-full border border-red-400 bg-red-100 px-3 py-1 text-red-800">High (8-9)</span>
+          <span class="rounded-full border border-red-900 bg-red-900 px-2 py-1 text-white">Extreme (10)</span>
+        </div>
+      </div>
+
+      <div class="flex justify-start px-1">
+        <button
+          type="button"
+          class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
+          (click)="toggleBaseLayer()"
+        >
+          {{ mapMode === 'satellite' ? 'Ver mapa simple' : 'Ver satélite' }}
+        </button>
+      </div>
+
+      <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm" style="position: relative; z-index: 0;">
+        <div class="h-128 w-full" style="position: relative; z-index: 0;">
+          <div #mapContainer class="h-full w-full" style="position: relative; z-index: auto;"></div>
+        </div>
+      </div>
+    </section>
+  `,
   host: {
     class: 'block w-full',
     style: 'position: relative; z-index: 0;',
@@ -29,6 +59,10 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly center: [number, number] = [4.7330, -74.0415];
   private readonly initialZoom = 19;
+  private leaflet: any | null = null;
+  private activeBaseLayer: any | null = null;
+
+  protected mapMode: 'satellite' | 'simple' = 'satellite';
 
   protected mapMode: ZoneMapMode = 'satellite';
 
@@ -49,6 +83,7 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
 
     const leafletModule = await import('leaflet');
     const L = leafletModule.default;
+    this.leaflet = leafletModule.default;
 
     this.map = L.map(this.mapContainer.nativeElement, {
       center: this.center,
@@ -61,9 +96,11 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
 
     this.setBaseLayer(L, this.mapMode);
 
+    // Crear polígonos de zonas de vigilancia
     this.zonasPolygon.forEach((zona) => {
-      const color = this.getColorForAccidents(zona.accidentCount);
-
+      const color = this.getColorForIntensidad(zona.intensidad);
+      console.log(`Zona: ${zona.nombre}, Numero de accidentes: ${zona.intensidad}, Color: ${color}`);
+      
       const polygon = L.polygon(zona.puntos, {
         color,
         weight: 2,
@@ -99,14 +136,24 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
     if (this.map) {
       this.polygons.forEach(polygon => polygon.remove());
       this.polygons = [];
-
+      this.activeBaseLayer = null;
+      
       this.map.remove();
       this.map = null;
       this.activeBaseLayer = null;
     }
   }
 
-  public addZonePolygon(zona: HeatmapZone): void {
+  toggleBaseLayer(): void {
+    if (!this.map || !this.leaflet) {
+      return;
+    }
+
+    this.mapMode = this.mapMode === 'satellite' ? 'simple' : 'satellite';
+    this.setBaseLayer(this.leaflet, this.mapMode);
+  }
+
+  public addZonePolygon(zona: ZonaVigilancia): void {
     if (this.map) {
       const leaflet = (window as any).L;
       const color = this.getColorForAccidents(zona.accidentCount);
@@ -202,5 +249,31 @@ export class HeatmapComponent implements AfterViewInit, OnDestroy {
     }
 
     return '#7f1d1d';
+  }
+
+  private setBaseLayer(L: any, mode: 'satellite' | 'simple'): void {
+    if (!this.map) {
+      return;
+    }
+
+    if (this.activeBaseLayer) {
+      this.map.removeLayer(this.activeBaseLayer);
+      this.activeBaseLayer = null;
+    }
+
+    this.activeBaseLayer = mode === 'satellite'
+      ? L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          attribution: 'Tiles &copy; Esri',
+          maxZoom: 20,
+          minZoom: 1,
+        })
+      : L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+          maxZoom: 20,
+          minZoom: 1,
+        });
+
+    const baseLayer = this.activeBaseLayer;
+    baseLayer.addTo(this.map);
   }
 }
