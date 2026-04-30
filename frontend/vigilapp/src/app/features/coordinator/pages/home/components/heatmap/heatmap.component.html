@@ -5,7 +5,7 @@
 			<p class="px-1 mt-2 text-sm leading-6 text-slate-600">Las zonas conservan la capa de calor aunque cambies la base del mapa.</p>
 		</div>
 
-		<button type="button" class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950">
+		<button type="button" class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950" (click)="toggleBaseLayer()">
 			{{ mapMode === 'satellite' ? 'Ver mapa simple' : 'Ver satélite' }}
 		</button>
 	</div>
