@@ -10,6 +10,7 @@ import { PageHeader } from '../../../../shared/ui/page-header/page-header';
 import { Modal } from '../../../../shared/ui/modal/modal';
 import { GlassCard } from '../../../../shared/ui/glass-card/glass-card';
 import { StatCard } from '../../../../shared/ui/stat-card/stat-card';
+import { MOCK_SHIFTS, MOCK_TEACHERS, MOCK_ZONES } from '../../admin.mock-data';
 
 interface CalendarDay {
   date: string;
@@ -68,15 +69,24 @@ export class Shifts {
   constructor() {
     const shifts$   = this.adminService.refresh$.pipe(
       startWith(undefined as void),
-      switchMap(() => this.adminService.getShifts().pipe(catchError(() => of<Shift[]>([]))))
+      switchMap(() => this.adminService.getShifts().pipe(
+        map(items => items.length > 0 ? items : MOCK_SHIFTS),
+        catchError(() => of(MOCK_SHIFTS))
+      ))
     );
     const teachers$ = this.adminService.refresh$.pipe(
       startWith(undefined as void),
-      switchMap(() => this.adminService.getTeachers().pipe(catchError(() => of<Teacher[]>([]))))
+      switchMap(() => this.adminService.getTeachers().pipe(
+        map(items => items.length > 0 ? items : MOCK_TEACHERS),
+        catchError(() => of(MOCK_TEACHERS))
+      ))
     );
     const zones$    = this.adminService.refresh$.pipe(
       startWith(undefined as void),
-      switchMap(() => this.adminService.getZones().pipe(catchError(() => of<Zone[]>([]))))
+      switchMap(() => this.adminService.getZones().pipe(
+        map(items => items.length > 0 ? items : MOCK_ZONES),
+        catchError(() => of(MOCK_ZONES))
+      ))
     );
 
     this.vm$ = combineLatest([

@@ -5,6 +5,7 @@ import {
   CoordinatorUser,
   CoordinatorZone,
 } from './coordinator-home.models';
+import { COORDINATOR_ZONE_CATALOG } from './coordinator-zone-catalog';
 
 export const COORDINATOR_DAY = '2026-02-26';
 
@@ -22,62 +23,14 @@ export const MOCK_TEACHERS: CoordinatorTeacher[] = [
 ];
 
 export const MOCK_ZONES: CoordinatorZone[] = [
-  {
-    id: 'z1',
-    name: 'Parque Bachillerato Izquierdo',
-    description: 'Zona oeste del bachillerato con control de ingreso y circulación.',
-    capacity: 180,
-    checkpoints: ['Acceso oeste', 'Pasillo administrativo', 'Salida lateral'],
-    intensidad: 4
-  },
-  {
-    id: 'z2',
-    name: 'Parque Bachillerato central',
-    description: 'Corazón del área de bachillerato con tránsito alto de estudiantes.',
-    capacity: 220,
-    checkpoints: ['Acceso central', 'Patio medio', 'Corredor norte'],
-    intensidad: 5
-  },
-  {
-    id: 'z3',
-    name: 'Parque preescolar',
-    description: 'Sector de preescolar con circulación controlada y acceso reducido.',
-    capacity: 320,
-    checkpoints: ['Ingreso preescolar', 'Zona de juego', 'Salida segura'],
-    intensidad: 4
-  },
-  {
-    id: 'z4',
-    name: 'Coliseo',
-    description: 'Espacio cerrado para actividades múltiples y eventos institucionales.',
-    capacity: 150,
-    checkpoints: ['Entrada principal', 'Graderías', 'Acceso técnico'],
-    intensidad: 10
-  },
-  {
-    id: 'z5',
-    name: 'Cancha baloncesto',
-    description: 'Área deportiva abierta con recorridos frecuentes en horas pico.',
-    capacity: 240,
-    checkpoints: ['Borde norte', 'Borde sur', 'Acceso deportivo'],
-    intensidad: 8
-  },
-  {
-    id: 'z6',
-    name: 'Cafeteria Bachillerato',
-    description: 'Punto de alimentación del bachillerato con afluencia media-baja.',
-    capacity: 160,
-    checkpoints: ['Fila principal', 'Mesas centrales', 'Salida lateral'],
-    intensidad: 1
-  },
-  {
-    id: 'z7',
-    name: 'Cafeteria Preescolar',
-    description: 'Área de cafetería para preescolar con control de acompañamiento.',
-    capacity: 120,
-    checkpoints: ['Ingreso', 'Zona de atención', 'Salida acompañada'],
-    intensidad: 1
-  }
+  ...COORDINATOR_ZONE_CATALOG.map(zone => ({
+    id: zone.id,
+    name: zone.name,
+    description: zone.description,
+    capacity: zone.capacity,
+    checkpoints: [...zone.checkpoints],
+    intensidad: zone.accidentCount,
+  }))
 ];
 
 export const MOCK_SHIFTS: CoordinatorShift[] = [
